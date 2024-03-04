@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 function Timer({ onSelectMode }) {
 
   const [defaultPomodoroTime, setDefaultPomodoroTime] = useState({ minutes: 25, seconds: 0 });
@@ -18,6 +17,28 @@ function Timer({ onSelectMode }) {
     ShortBreak: { time: shortBreak, color: "#428455", btnColor: "#6fa67f", boxColor: "#6fa67f" },
     LongBreak: { time: longBreak, color: "#854284", btnColor: "#c482c3", boxColor: "#c482c3" }
   };
+
+  useEffect(() => {
+    const fetchSettings = () => {
+      fetch('../../src-tauri/settings.json')
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          setDefaultPomodoroTime(data.pomodoro_time);
+          setShortBreak(data.short_break_time);
+          setLongBreak(data.long_break_time);
+        })
+        .catch(error => {
+          console.error('Error fetching settings:', error);
+        });
+    };
+
+    fetchSettings();
+
+    const intervalId = setInterval(fetchSettings, 1000); // Adjust interval duration as needed
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     if (selectedMode && !isRunning) {
