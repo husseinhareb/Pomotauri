@@ -1,7 +1,6 @@
 import React from 'react';
-import Pomodoro from './Components/Pomodoro';
-import Navbar from './Components/Navbar';
-import Settings from './Components/Settings';
+import Pomodoro from './components/Pomodoro';
+import Navbar from './components/Navbar';
 import './App.css';
 function App() {
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Timer from './Timer';
-import "../Styles/Pomodoro.css"
+import "../styles/Pomodoro.css"
 function Pomodoro() {
     const [selectedMode, setSelectedMode] = useState('Pomodoro');
     let backgroundColor = '';

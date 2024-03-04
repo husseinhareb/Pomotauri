@@ -1,44 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Cookies from "js-cookie";
-import "../Styles/Settings.css";
+import { invoke } from "@tauri-apps/api/tauri";
+import "../styles/Settings.css";
 import closeIco from "../assets/icons/closeIco.svg";
-import clockIco from "../assets/icons/clockIco.svg"
-
+import clockIco from "../assets/icons/clockIco.svg";
 function Settings({ onClose }) {
   const [pomodoroTime, setPomodoroTime] = useState({ minutes: 25, seconds: 0 });
   const [shortBreakTime, setShortBreakTime] = useState({ minutes: 5, seconds: 0 });
   const [longBreakTime, setLongBreakTime] = useState({ minutes: 15, seconds: 0 });
 
-  useEffect(() => {
-    const readCookieValues = () => {
-      const pomodoroTimeCookie = Cookies.get("pomodoroTime");
-      const shortBreakTimeCookie = Cookies.get("shortBreakTime");
-      const longBreakTimeCookie = Cookies.get("longBreakTime");
-
-      if (pomodoroTimeCookie) {
-        setPomodoroTime(JSON.parse(pomodoroTimeCookie));
-      }
-      if (shortBreakTimeCookie) {
-        setShortBreakTime(JSON.parse(shortBreakTimeCookie));
-      }
-      if (longBreakTimeCookie) {
-        setLongBreakTime(JSON.parse(longBreakTimeCookie));
-      }
-    };
-
-    readCookieValues();
-  }, []);
 
   const handleClose = () => {
     onClose({ pomodoroTime, shortBreakTime, longBreakTime });
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    handleClose();
-    Cookies.set("pomodoroTime", JSON.stringify(pomodoroTime), { sameSite: "None", secure: true });
-    Cookies.set("shortBreakTime", JSON.stringify(shortBreakTime), { sameSite: "None", secure: true });
-    Cookies.set("longBreakTime", JSON.stringify(longBreakTime), { sameSite: "None", secure: true });
   };
 
   const handlePomodoroMinutesChange = (e) => {
@@ -81,6 +53,25 @@ function Settings({ onClose }) {
       ...prevTime,
       seconds: parseInt(e.target.value) || 0
     }));
+  };
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    handleClose();
+    const data = {
+      pomodoro_time: pomodoroTime,
+      short_break_time: shortBreakTime,
+      long_break_time: longBreakTime
+    };
+    
+
+    try {
+      await invoke("receive_data", { data });
+      console.log(data);
+    } catch (error) {
+      console.error('Error while sending data to backend:', error);
+    }
   };
 
   return (

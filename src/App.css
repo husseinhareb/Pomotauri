@@ -1,7 +1,7 @@
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
+* {
+  font-family: 'Valera Round', sans-serif;
 }
 
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafb);
+body {
+  background-color: #BA4949;
 }

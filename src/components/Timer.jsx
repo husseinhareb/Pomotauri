@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Cookies from "js-cookie";
+
 function Timer({ onSelectMode }) {
 
   const [defaultPomodoroTime, setDefaultPomodoroTime] = useState({ minutes: 25, seconds: 0 });
@@ -18,48 +18,6 @@ function Timer({ onSelectMode }) {
     ShortBreak: { time: shortBreak, color: "#428455", btnColor: "#6fa67f", boxColor: "#6fa67f" },
     LongBreak: { time: longBreak, color: "#854284", btnColor: "#c482c3", boxColor: "#c482c3" }
   };
-  useEffect(() => {
-    let prevPomodoroTime = null;
-    let prevShortBreakTime = null;
-    let prevLongBreakTime = null;
-
-    const handleCookieChange = () => {
-      const pomodoroTimeCookie = Cookies.get("pomodoroTime");
-      const shortBreakTimeCookie = Cookies.get("shortBreakTime");
-      const longBreakTimeCookie = Cookies.get("longBreakTime");
-
-      if (pomodoroTimeCookie) {
-        const parsedPomodoroTime = JSON.parse(pomodoroTimeCookie);
-        if (JSON.stringify(parsedPomodoroTime) !== JSON.stringify(prevPomodoroTime)) {
-          setDefaultPomodoroTime(parsedPomodoroTime);
-          setTime(parsedPomodoroTime);
-          prevPomodoroTime = parsedPomodoroTime;
-        }
-      }
-
-      if (shortBreakTimeCookie) {
-        const parsedShortBreakTime = JSON.parse(shortBreakTimeCookie);
-        if (JSON.stringify(parsedShortBreakTime) !== JSON.stringify(prevShortBreakTime)) {
-          setShortBreak(parsedShortBreakTime);
-          setTime(parsedShortBreakTime);
-          prevShortBreakTime = parsedShortBreakTime;
-        }
-      }
-
-      if (longBreakTimeCookie) {
-        const parsedLongBreakTime = JSON.parse(longBreakTimeCookie);
-        if (JSON.stringify(parsedLongBreakTime) !== JSON.stringify(prevLongBreakTime)) {
-          setLongBreak(parsedLongBreakTime);
-          setTime(parsedLongBreakTime);
-          prevLongBreakTime = parsedLongBreakTime;
-        }
-      }
-    };
-
-    handleCookieChange();
-    const intervalId = setInterval(handleCookieChange, 1000);
-    return () => clearInterval(intervalId);
-  }, []);
 
   useEffect(() => {
     if (selectedMode && !isRunning) {
