@@ -1,6 +1,9 @@
+// Prevents additional console window on Windows in release, DO NOT REMOVE!!
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 use serde::{Deserialize, Serialize};
 use std::fs;
-use tauri::AppHandle;
+use tauri::{AppHandle};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TimerSettings {
@@ -27,7 +30,7 @@ fn set_config(app_handle: AppHandle, data: TimerSettings) -> Result<(), String> 
     let config_file_path = app_dir.join("config.json");
     let serialized_config =
         serde_json::to_string_pretty(&data).map_err(|err| format!("Error serializing config: {}", err))?;
-    println!("Serialized config: {}", serialized_config);
+    println!("I'm Sending Serialized config: {}", serialized_config);
 
     if let Err(err) = fs::write(&config_file_path, serialized_config) {
         return Err(format!("Error writing to config file: {}", err));
@@ -36,9 +39,30 @@ fn set_config(app_handle: AppHandle, data: TimerSettings) -> Result<(), String> 
     Ok(())
 }
 
+#[tauri::command]
+async fn get_config(app_handle: AppHandle) -> Result<String, String> {
+    let app_dir = app_handle
+        .path_resolver()
+        .app_data_dir()
+        .expect("The app data directory should exist.");
+
+    let config_file_path = app_dir.join("config.json");
+    let content = match fs::read_to_string(&config_file_path) {
+        Ok(content) => {
+            println!("Content read from config file:\n{}", content); // Print content
+            content
+        },
+        Err(err) => return Err(format!("Error reading config file: {}", err)),
+    };
+
+    Ok(content)
+}
+
+
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![set_config])
+        .invoke_handler(tauri::generate_handler![set_config, get_config])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

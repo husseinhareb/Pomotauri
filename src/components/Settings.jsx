@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from '@tauri-apps/api/tauri';
 import "../styles/Settings.css";
 import closeIco from "../assets/icons/closeIco.svg";
 import clockIco from "../assets/icons/clockIco.svg";

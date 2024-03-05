@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { invoke } from '@tauri-apps/api/tauri';
+
 function Timer({ onSelectMode }) {
 
   const [defaultPomodoroTime, setDefaultPomodoroTime] = useState({ minutes: 25, seconds: 0 });
@@ -10,6 +12,7 @@ function Timer({ onSelectMode }) {
   const [boxColor, setBoxColor] = useState("");
   const [btnColor, setBtnColor] = useState("");
   const [counter, setCounter] = useState(1);
+  const [config, setConfig] = useState(null);
   const [backgroundColor, setBackgroundColor] = useState("#BA4949");
   const [alarmSound] = useState(new Audio('sounds/alarm.mp3'));
 
@@ -19,17 +22,22 @@ function Timer({ onSelectMode }) {
     LongBreak: { time: longBreak, color: "#854284", btnColor: "#c482c3", boxColor: "#c482c3" }
   };
 
-  async function fetchSettings() {
-    try {
-        // Invoke the Tauri command to get settings from the backend
-        const settings = await invoke('get_settings');
-        console.log('Settings received:', settings);
-        // Handle the received settings
-        handleSettings(settings);
-    } catch (error) {
-        console.error('Error fetching settings:', error);
-    }
-}
+  useEffect(() => {
+    // Fetch config data every second
+    const intervalId = setInterval(async () => {
+      try {
+        const config = await invoke('get_config'); // Call the Rust function
+        setConfig(config); 
+        console.log(config)// Set the config state with the received data
+      } catch (error) {
+        console.error('Error retrieving config:', error);
+      }
+    }, 1000); // Interval of 1000 milliseconds (1 second)
+
+    // Cleanup function to clear the interval when component unmounts
+    return () => clearInterval(intervalId);
+  }, []);
+
 
   useEffect(() => {
     if (selectedMode && !isRunning) {
