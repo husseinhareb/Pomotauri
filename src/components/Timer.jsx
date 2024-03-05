@@ -23,20 +23,23 @@ function Timer({ onSelectMode }) {
   };
 
   useEffect(() => {
-    // Fetch config data every second
-    const intervalId = setInterval(async () => {
+    const fetchConfig = async () => {
       try {
-        const config = await invoke('get_config'); // Call the Rust function
-        setConfig(config); 
-        console.log(config)// Set the config state with the received data
+        const response = await invoke('get_config'); 
+        setConfig(response);
+        console.log(response);
       } catch (error) {
-        console.error('Error retrieving config:', error);
+        console.error('Error fetching config:', error);
       }
-    }, 1000); // Interval of 1000 milliseconds (1 second)
+    };
 
-    // Cleanup function to clear the interval when component unmounts
-    return () => clearInterval(intervalId);
+    fetchConfig(); 
+    const intervalId = setInterval(fetchConfig, 1000); 
+
+    return () => clearInterval(intervalId); 
   }, []);
+
+
 
 
   useEffect(() => {

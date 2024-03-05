@@ -40,7 +40,7 @@ fn set_config(app_handle: AppHandle, data: TimerSettings) -> Result<(), String> 
 }
 
 #[tauri::command]
-async fn get_config(app_handle: AppHandle) -> Result<String, String> {
+async fn get_config(app_handle: AppHandle) -> Result<TimerSettings, String> {
     let app_dir = app_handle
         .path_resolver()
         .app_data_dir()
@@ -48,17 +48,17 @@ async fn get_config(app_handle: AppHandle) -> Result<String, String> {
 
     let config_file_path = app_dir.join("config.json");
     let content = match fs::read_to_string(&config_file_path) {
-        Ok(content) => {
-            println!("Content read from config file:\n{}", content); // Print content
-            content
-        },
+        Ok(content) => content,
         Err(err) => return Err(format!("Error reading config file: {}", err)),
     };
 
-    Ok(content)
+    let config: TimerSettings = match serde_json::from_str(&content) {
+        Ok(config) => config,
+        Err(err) => return Err(format!("Error deserializing config: {}", err)),
+    };
+
+    Ok(config)
 }
-
-
 
 fn main() {
     tauri::Builder::default()
