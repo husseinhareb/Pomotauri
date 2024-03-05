@@ -54,26 +54,25 @@ function Settings({ onClose }) {
       seconds: parseInt(e.target.value) || 0
     }));
   };
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     handleClose();
     const data = {
-      pomodoro_time: pomodoroTime,
-      short_break_time: shortBreakTime,
-      long_break_time: longBreakTime
+      pomodoro_time: { minutes: pomodoroTime.minutes, seconds: pomodoroTime.seconds },
+      short_break_time: { minutes: shortBreakTime.minutes, seconds: shortBreakTime.seconds },
+      long_break_time: { minutes: longBreakTime.minutes, seconds: longBreakTime.seconds }
     };
-    
-
+  
     try {
-      await invoke("receive_data", { data });
+      await invoke("set_config", {data});
       console.log(data);
     } catch (error) {
       console.error('Error while sending data to backend:', error);
     }
   };
-
+  
+  
+  
   return (
     <div className="settings-window">
       <h3 className="settingsTitle">Settings</h3>
