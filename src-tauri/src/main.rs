@@ -1,11 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
+mod config;
+use config::TimeConfig;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use tauri::AppHandle;
 
-// Your existing code for TimerSettings and TimerDuration goes here...
+
 
 #[derive(Debug, Deserialize, Serialize)]
 struct TimerSettings {
@@ -29,6 +30,19 @@ async fn receive_data(_app_handle: AppHandle, data: TimerSettings) {
     }
 }
 
+
+#[tauri::command]
+fn set_config(app_handle: AppHandle, config: TimeConfig) -> TimeConfig {
+    let app_dir = app_handle.path_resolver().app_data_dir().expect("The app data directory should exist.");
+    fs::create_dir_all(&app_dir).expect("The app data directory should be created.");
+    let config_file_path = app_dir.join("config.json");
+
+    let serialized_config = serde_json::to_string_pretty(&config).unwrap();
+    fs::write(config_file_path, serialized_config).expect("Unable to write to config file");
+    config
+}
+
+
 fn save_settings(settings: &TimerSettings) -> std::io::Result<()> {
     let json = serde_json::to_string(settings)?;
     fs::write("settings.json", json)?;
@@ -42,7 +56,7 @@ fn load_settings() -> std::io::Result<TimerSettings> {
 }
 
 fn main() {
-    // Load existing settings or use defaults if the file doesn't exist
+    // Load existing settings or  defaults if the file doesn't exist
     let mut settings = match load_settings() {
         Ok(settings) => settings,
         Err(_) => TimerSettings {
@@ -62,11 +76,10 @@ fn main() {
     };
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![receive_data])
+        .invoke_handler(tauri::generate_handler![receive_data, set_config])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
 
 
 

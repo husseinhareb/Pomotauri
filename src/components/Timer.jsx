@@ -12,33 +12,24 @@ function Timer({ onSelectMode }) {
   const [counter, setCounter] = useState(1);
   const [backgroundColor, setBackgroundColor] = useState("#BA4949");
   const [alarmSound] = useState(new Audio('sounds/alarm.mp3'));
+
   const modeOptions = {
     Pomodoro: { time: defaultPomodoroTime, color: "#BA4949", btnColor: "#C15C5C", boxColor: "#C15C5C" },
     ShortBreak: { time: shortBreak, color: "#428455", btnColor: "#6fa67f", boxColor: "#6fa67f" },
     LongBreak: { time: longBreak, color: "#854284", btnColor: "#c482c3", boxColor: "#c482c3" }
   };
 
-  useEffect(() => {
-    const fetchSettings = () => {
-      fetch('../../src-tauri/settings.json')
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          setDefaultPomodoroTime(data.pomodoro_time);
-          setShortBreak(data.short_break_time);
-          setLongBreak(data.long_break_time);
-        })
-        .catch(error => {
-          console.error('Error fetching settings:', error);
-        });
-    };
-
-    fetchSettings();
-
-    const intervalId = setInterval(fetchSettings, 1000); // Adjust interval duration as needed
-
-    return () => clearInterval(intervalId);
-  }, []);
+  async function fetchSettings() {
+    try {
+        // Invoke the Tauri command to get settings from the backend
+        const settings = await invoke('get_settings');
+        console.log('Settings received:', settings);
+        // Handle the received settings
+        handleSettings(settings);
+    } catch (error) {
+        console.error('Error fetching settings:', error);
+    }
+}
 
   useEffect(() => {
     if (selectedMode && !isRunning) {
@@ -76,7 +67,7 @@ function Timer({ onSelectMode }) {
 
 
   useEffect(() => {
-    document.body.style.transition = 'background-color 0.7s ease-in-out'; // Define transition for smooth color change
+    document.body.style.transition = 'background-color 0.7s ease-in-out';
     document.body.style.backgroundColor = backgroundColor;
   }, [backgroundColor]);
 
@@ -91,10 +82,9 @@ function Timer({ onSelectMode }) {
   };
 
 
-
-const startTimer = () => {
-  setIsRunning(prevIsRunning => !prevIsRunning);
-};
+  const startTimer = () => {
+    setIsRunning(prevIsRunning => !prevIsRunning);
+  };
 
   const handleModeChange = (mode) => {
     setSelectedMode(mode);
@@ -170,7 +160,7 @@ const startTimer = () => {
 
 
   return (
-
+    
     <div className="box" style={{ backgroundColor: boxColor, transition: 'background-color 0.7s ease-in-out' }}>
       <div className="topButtons">
         <button className={`button ${selectedMode === "Pomodoro" ? "selected" : ""}`} onClick={() => selectMode("Pomodoro")}>Pomodoro</button>

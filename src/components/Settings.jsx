@@ -8,18 +8,6 @@ function Settings({ onClose }) {
   const [shortBreakTime, setShortBreakTime] = useState({ minutes: 5, seconds: 0 });
   const [longBreakTime, setLongBreakTime] = useState({ minutes: 15, seconds: 0 });
 
-  useEffect(() => {
-    fetch('../../src-tauri/settings.json')
-      .then(response => response.json())
-      .then(data => {
-        setPomodoroTime(data.pomodoro_time);
-        setShortBreakTime(data.short_break_time);
-        setLongBreakTime(data.long_break_time);
-      })
-      .catch(error => {
-        console.error('Error fetching settings:', error);
-      });
-  }, []);
 
   const handleClose = () => {
     onClose({ pomodoroTime, shortBreakTime, longBreakTime });
@@ -76,7 +64,7 @@ function Settings({ onClose }) {
       short_break_time: shortBreakTime,
       long_break_time: longBreakTime
     };
-
+    
 
     try {
       await invoke("receive_data", { data });
