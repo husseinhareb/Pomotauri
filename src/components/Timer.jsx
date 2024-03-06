@@ -15,7 +15,7 @@ function Timer({ onSelectMode }) {
   const [config, setConfig] = useState(null);
   const [backgroundColor, setBackgroundColor] = useState("#BA4949");
   const [alarmSound] = useState(new Audio('sounds/alarm.mp3'));
-
+  const [buttonSound] = useState(new Audio('sounds/buttonSound.mp3'));
   const modeOptions = {
     Pomodoro: { time: defaultPomodoroTime, color: "#BA4949", btnColor: "#C15C5C", boxColor: "#C15C5C" },
     ShortBreak: { time: shortBreak, color: "#428455", btnColor: "#6fa67f", boxColor: "#6fa67f" },
@@ -25,21 +25,21 @@ function Timer({ onSelectMode }) {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await invoke('get_config'); 
+        const response = await invoke('get_config');
         setConfig(response);
         console.log(response);
         setDefaultPomodoroTime(response.pomodoro_time)
         setShortBreak(response.short_break_time)
         setLongBreak(response.long_break_time)
       } catch (error) {
-        console.error('Erro/home/shtam/Downloads/StoreLogo.pngr fetching config:', error);
+        console.error('Error fetching config:', error);
       }
     };
 
-    fetchConfig(); 
-    const intervalId = setInterval(fetchConfig, 1000); 
+    fetchConfig();
+    const intervalId = setInterval(fetchConfig, 1000);
 
-    return () => clearInterval(intervalId); 
+    return () => clearInterval(intervalId);
   }, []);
 
 
@@ -97,6 +97,7 @@ function Timer({ onSelectMode }) {
 
 
   const startTimer = () => {
+    playBtnSound();
     setIsRunning(prevIsRunning => !prevIsRunning);
   };
 
@@ -110,6 +111,7 @@ function Timer({ onSelectMode }) {
   };
 
   const resetTimer = () => {
+    playBtnSound();
     handleModeChange(selectedMode);
     setIsRunning(false);
   };
@@ -155,7 +157,10 @@ function Timer({ onSelectMode }) {
       document.title = `${minutes}:${seconds < 10 ? "0" : ""}${seconds} - Go Outside :D`;
     }
   }, [time]);
+  const playBtnSound = () => {
+    buttonSound.play();
 
+  }
   const playAlarm = () => {
     alarmSound.play();
   }
@@ -174,7 +179,7 @@ function Timer({ onSelectMode }) {
 
 
   return (
-    
+
     <div className="box" style={{ backgroundColor: boxColor, transition: 'background-color 0.7s ease-in-out' }}>
       <div className="topButtons">
         <button className={`button ${selectedMode === "Pomodoro" ? "selected" : ""}`} onClick={() => selectMode("Pomodoro")}>Pomodoro</button>
