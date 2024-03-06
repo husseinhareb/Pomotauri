@@ -9,6 +9,21 @@ function Settings({ onClose }) {
   const [longBreakTime, setLongBreakTime] = useState({ minutes: 15, seconds: 0 });
 
 
+  useEffect(() => {
+    const readTimerValues = async () => {
+      try {
+        const response = await invoke('get_config'); 
+        setPomodoroTime(response.pomodoro_time);
+        setShortBreakTime(response.short_break_time);
+        setLongBreakTime(response.long_break_time);
+      } catch (error) {
+        console.error('Error fetching config:', error);
+      }
+    };
+    readTimerValues();
+  }, []);
+  
+
   const handleClose = () => {
     onClose({ pomodoroTime, shortBreakTime, longBreakTime });
   };

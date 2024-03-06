@@ -32,7 +32,7 @@ function Timer({ onSelectMode }) {
         setShortBreak(response.short_break_time)
         setLongBreak(response.long_break_time)
       } catch (error) {
-        console.error('Error fetching config:', error);
+        console.error('Erro/home/shtam/Downloads/StoreLogo.pngr fetching config:', error);
       }
     };
 
