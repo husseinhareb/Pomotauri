@@ -1,0 +1,41 @@
+.tasks-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.tasks-div {
+    background-color: #BA4949;
+    height: 100px;
+    width: 500px;
+}
+
+.top-task {
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-title {
+    color: aliceblue;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.tasks-settings {
+    background-color: #C15C5C;
+    border: 0px;
+}
+
+.add-task {
+    background-color: #C15C5C;
+}
+
+.add-task-btn {
+    width: 100%;
+    height: 60px;
+    background-color: #C15C5C;
+    border: 2px dotted #ffffff;
+    cursor: pointer;
+
+}
