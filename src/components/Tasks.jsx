@@ -22,18 +22,19 @@ function Tasks() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newTask = { id: tasks.length + 1, task: taskContent, expectedTime: taskTime };
-        setTasks([...tasks, newTask]);
-        setShowInput(false);
-        setTaskContent("");
-        setTaskTime(25);
-  
+    
         try {
-            await invoke("set_task", {newTask});
+            await invoke("set_task", { data: newTask });
             console.log(newTask);
-          } catch (error) {
+            setTasks([...tasks, newTask]);
+            setShowInput(false);
+            setTaskContent("");
+            setTaskTime(25);
+        } catch (error) {
             console.error('Error while sending data to backend:', error);
-          }
+        }
     };
+    
 
     const handleTaskContent = (e) => {
         setTaskContent(e.target.value);
