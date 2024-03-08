@@ -42,4 +42,19 @@
 
 .new-task{
     width: 100%;
+    height: 120px;
+    background-color: white;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.task-input{
+    width: 90%;
+    font-size: 30px;
+}
+
+.new-task-bottom{
+    background-color: red;
+    bottom: 10px;
+
 }
