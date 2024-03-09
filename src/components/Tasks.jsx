@@ -28,7 +28,7 @@ function Tasks() {
             console.error('Error while fetching tasks:', error);
         }
     };
-    
+
 
     const addTask = () => {
         if (!showInput) {
@@ -64,6 +64,12 @@ function Tasks() {
         setTaskTime(e.target.value);
     };
 
+    const handleDeleteTask = (taskId) => {
+        const updatedTasks = tasks.filter(task => task.id !== taskId);
+        setTasks(updatedTasks);
+    };
+    
+
     return (
         <div className="tasks-container">
             <div className="tasks-div">
@@ -79,10 +85,17 @@ function Tasks() {
                         <div className="task-list">
                             {tasks.map(task => (
                                 <div key={task.id} className="task-item">
+                                    <div>
+                                        <input type="checkbox" />
+                                    </div>
                                     <p>{task.task}</p>
                                     <p>{task.expected_time}</p>
+                                    <div>
+                                        <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+                                    </div>
                                 </div>
                             ))}
+
                         </div>
                     ) : (
                         <p>No tasks available</p>
