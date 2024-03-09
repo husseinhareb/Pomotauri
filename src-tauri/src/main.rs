@@ -1,6 +1,15 @@
+// Prevents additional console window on Windows in release, DO NOT REMOVE!!
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 use serde::{Deserialize, Serialize};
 use std::fs;
 use tauri::{AppHandle};
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TimerDuration {
+    pub minutes: u32,
+    pub seconds: u32,
+}
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TimerSettings {
@@ -13,13 +22,7 @@ pub struct TimerSettings {
 pub struct Task {
     pub id: u32,
     pub task: String,
-    pub expected_time: u32, 
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct TimerDuration {
-    pub minutes: u32,
-    pub seconds: u32,
+    pub expected_time: String, 
 }
 
 #[tauri::command]
@@ -64,6 +67,7 @@ async fn get_config(app_handle: AppHandle) -> Result<TimerSettings, String> {
     Ok(config)
 }
 
+
 #[tauri::command]
 fn set_task(app_handle: AppHandle, data: Task) -> Result<(), String> {
     let app_dir = app_handle
@@ -71,15 +75,16 @@ fn set_task(app_handle: AppHandle, data: Task) -> Result<(), String> {
         .app_data_dir()
         .expect("The app data directory should exist.");
 
-    fs::create_dir_all(&app_dir).map_err(|err| format!("Error creating directory: {}", err))?;
+    fs::create_dir_all(&app_dir)
+        .map_err(|err| format!("Error creating directory: {}", err))?;
 
     let config_file_path = app_dir.join("tasks.json");
-    let serialized_config =
-        serde_json::to_string_pretty(&data).map_err(|err| format!("Error serializing config: {}", err))?;
-    println!("I'm Sending Serialized config: {}", serialized_config);
+    let serialized_task =
+        serde_json::to_string(&data).map_err(|err| format!("Error serializing task: {}", err))?;
+    println!("Serialized task: {}", serialized_task);
 
-    if let Err(err) = fs::write(&config_file_path, serialized_config) {
-        return Err(format!("Error writing to config file: {}", err));
+    if let Err(err) = fs::write(&config_file_path, serialized_task) {
+        return Err(format!("Error writing to task file: {}", err));
     }
 
     Ok(())

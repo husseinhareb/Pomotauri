@@ -7,7 +7,7 @@ function Tasks() {
     const [showInput, setShowInput] = useState(false);
     const [taskContent, setTaskContent] = useState("");
     const [taskTime, setTaskTime] = useState(25);
-    const [tasks, setTasks] = useState([]); 
+    const [tasks, setTasks] = useState([]);
 
     const addTask = () => {
         if (!showInput) {
@@ -21,8 +21,8 @@ function Tasks() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newTask = { id: tasks.length + 1, task: taskContent, expectedTime: taskTime };
-    
+        const newTask = { id: tasks.length + 1, task: taskContent, expected_time: taskTime };
+
         try {
             await invoke("set_task", { data: newTask });
             console.log(newTask);
@@ -34,7 +34,9 @@ function Tasks() {
             console.error('Error while sending data to backend:', error);
         }
     };
-    
+
+
+
 
     const handleTaskContent = (e) => {
         setTaskContent(e.target.value);
@@ -61,14 +63,14 @@ function Tasks() {
                                 <input
                                     type="text"
                                     onChange={handleTaskContent}
-                                    value={taskContent} 
+                                    value={taskContent}
                                     placeholder="Enter your task"
                                     className="task-input"
                                 />
                                 <input
                                     type="number"
                                     onChange={handleTaskTime}
-                                    value={taskTime} 
+                                    value={taskTime}
                                     className="task-time"
                                 />
                                 <div className="new-task-bottom">
