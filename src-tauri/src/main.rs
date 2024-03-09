@@ -96,10 +96,12 @@ fn set_task(app_handle: AppHandle, data: Task) -> Result<(), String> {
     }
 
     Ok(())
+
 }
 
+
 #[tauri::command]
-fn get_tasks(app_handle: AppHandle) -> Result<Vec<Task>, String> {
+async fn get_tasks(app_handle: AppHandle) -> Result<Vec<Task>, String> {
     let app_dir = app_handle
         .path_resolver()
         .app_data_dir()
