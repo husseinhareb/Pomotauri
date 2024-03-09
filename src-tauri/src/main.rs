@@ -22,7 +22,7 @@ pub struct TimerSettings {
 pub struct Task {
     pub id: u32,
     pub task: String,
-    pub expected_time: String, 
+    pub expected_time: u32, 
 }
 
 #[tauri::command]
@@ -79,20 +79,50 @@ fn set_task(app_handle: AppHandle, data: Task) -> Result<(), String> {
         .map_err(|err| format!("Error creating directory: {}", err))?;
 
     let config_file_path = app_dir.join("tasks.json");
-    let serialized_task =
-        serde_json::to_string(&data).map_err(|err| format!("Error serializing task: {}", err))?;
-    println!("Serialized task: {}", serialized_task);
+    
+    let mut tasks: Vec<Task> = if let Ok(content) = fs::read_to_string(&config_file_path) {
+        serde_json::from_str(&content).unwrap_or_else(|_| Vec::new())
+    } else {
+        Vec::new()
+    };
 
-    if let Err(err) = fs::write(&config_file_path, serialized_task) {
+    tasks.push(data);
+
+    let serialized_tasks = serde_json::to_string_pretty(&tasks)
+        .map_err(|err| format!("Error serializing tasks: {}", err))?;
+
+    if let Err(err) = fs::write(&config_file_path, serialized_tasks) {
         return Err(format!("Error writing to task file: {}", err));
     }
 
     Ok(())
 }
 
+#[tauri::command]
+fn get_tasks(app_handle: AppHandle) -> Result<Vec<Task>, String> {
+    let app_dir = app_handle
+        .path_resolver()
+        .app_data_dir()
+        .expect("The app data directory should exist.");
+
+    let tasks_file_path = app_dir.join("tasks.json");
+    let content = match fs::read_to_string(&tasks_file_path) {
+        Ok(content) => content,
+        Err(err) => return Err(format!("Error reading tasks file: {}", err)),
+    };
+
+    let tasks: Vec<Task> = match serde_json::from_str(&content) {
+        Ok(tasks) => tasks,
+        Err(err) => return Err(format!("Error deserializing tasks: {}", err)),
+    };
+
+    Ok(tasks)
+}
+
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![set_config, get_config, set_task])
+        .invoke_handler(tauri::generate_handler![set_config, get_config, set_task,get_tasks])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/Tasks.css";
 import barsIco from "../assets/icons/barsIco.svg";
 import { invoke } from '@tauri-apps/api/tauri';
@@ -8,6 +8,19 @@ function Tasks() {
     const [taskContent, setTaskContent] = useState("");
     const [taskTime, setTaskTime] = useState(25);
     const [tasks, setTasks] = useState([]);
+
+    useEffect(() => {
+        fetchTasks();
+    }, []);
+
+    const fetchTasks = async () => {
+        try {
+            const response = await invoke('get_tasks');
+            setTasks(response.data);
+        } catch (error) {
+            console.error('Error while fetching tasks:', error);
+        }
+    };
 
     const addTask = () => {
         if (!showInput) {
@@ -22,11 +35,11 @@ function Tasks() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newTask = { id: tasks.length + 1, task: taskContent, expected_time: taskTime };
-
+    
         try {
             await invoke("set_task", { data: newTask });
             console.log(newTask);
-            setTasks([...tasks, newTask]);
+            setTasks(prevTasks => [...prevTasks, newTask]); // Update tasks state with the new task
             setShowInput(false);
             setTaskContent("");
             setTaskTime(25);
@@ -34,10 +47,7 @@ function Tasks() {
             console.error('Error while sending data to backend:', error);
         }
     };
-
-
-
-
+    
     const handleTaskContent = (e) => {
         setTaskContent(e.target.value);
     };
@@ -56,6 +66,14 @@ function Tasks() {
                     </button>
                 </div>
                 <hr></hr>
+                <div className="task-list">
+                    {tasks.map(task => (
+                        <div key={task.id} className="task-item">
+                            <p>{task.task}</p>
+                            <p>{task.expected_time}</p>
+                        </div>
+                    ))}
+                </div>
                 <div className="add-task">
                     {showInput && (
                         <form onSubmit={handleSubmit}>
