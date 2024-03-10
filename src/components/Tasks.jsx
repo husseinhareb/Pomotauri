@@ -29,7 +29,6 @@ function Tasks() {
         }
     };
 
-
     const addTask = () => {
         if (!showInput) {
             setShowInput(true);
@@ -42,7 +41,7 @@ function Tasks() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newTask = { id: tasks.length + 1, task: taskContent, expected_time: taskTime };
+        const newTask = { id: tasks.length + 1, task: taskContent, expected_time: parseInt(taskTime) };
 
         try {
             await invoke("set_task", { data: newTask });
@@ -73,6 +72,20 @@ function Tasks() {
         }
     };
     
+    const handleTaskCompletion = async (taskId) =>{
+        try {
+            await invoke("delete_task", { id: taskId });
+            setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+        } catch (error) {
+            console.error('Error while deleting task:', error);
+        }
+        setTasks(tasks.map(task => {
+            if (task.id === taskId) {
+                return { ...task, completed: !task.completed };
+            }
+            return task;
+        }));
+    }
 
     return (
         <div className="tasks-container">
@@ -83,28 +96,32 @@ function Tasks() {
                         S <img src={barsIco} alt="Icon" />
                     </button>
                 </div>
-                <hr></hr>
+                <hr />
                 <div className="task-list">
                     {tasks && tasks.length > 0 ? (
                         <div className="task-list">
                             {tasks.map(task => (
                                 <div key={task.id} className="task-item">
                                     <div>
-                                        <input type="checkbox" />
+                                        <input type="checkbox" 
+                                            className="task-done"
+                                            onChange={() => handleTaskCompletion(task.id)}
+                                            checked={task.completed}
+                                        />
                                     </div>
-                                    <p>{task.task}</p>
+                                    <p style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+                                        {task.task}
+                                    </p>
                                     <p>{task.expected_time}</p>
                                     <div>
                                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
                                     </div>
                                 </div>
                             ))}
-
                         </div>
                     ) : (
                         <p>No tasks available</p>
                     )}
-
                 </div>
                 <div className="add-task">
                     {showInput && (
