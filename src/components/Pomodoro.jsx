@@ -3,7 +3,7 @@ import Timer from './Timer';
 import "../styles/Pomodoro.css"
 import Tasks from './Tasks';
 function Pomodoro() {
-    const [timerStatus, setTimerStatus] = useState('notWorking'); 
+    const [timerStatus, setTimerStatus] = useState(false); 
     const [selectedMode, setSelectedMode] = useState('Pomodoro');
     let backgroundColor = '';
 

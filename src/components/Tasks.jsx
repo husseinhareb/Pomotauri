@@ -3,12 +3,12 @@ import "../styles/Tasks.css";
 import barsIco from "../assets/icons/barsIco.svg";
 import { invoke } from '@tauri-apps/api/tauri';
 
-function Tasks({timerStatus}) {
+function Tasks({ timerStatus }) {
     const [showInput, setShowInput] = useState(false);
     const [taskContent, setTaskContent] = useState("");
     const [taskTime, setTaskTime] = useState(25);
     const [tasks, setTasks] = useState([]);
-    useEffect(() => {
+    const [time, setTime] = useState({ minutes: 0, seconds: 0 }); useEffect(() => {
         fetchTasks();
     }, []);
     useEffect(() => {
@@ -97,6 +97,29 @@ function Tasks({timerStatus}) {
         }));
     }
 
+
+    useEffect(() => {
+        let intervalId;
+    
+        if (timerStatus) {
+          intervalId = setInterval(() => {
+            setTime(prevTime => {
+              let newSeconds = prevTime.seconds + 1;
+              let newMinutes = prevTime.minutes;
+    
+              if (newSeconds === 60) {
+                newMinutes++;
+                newSeconds = 0;
+              }
+    
+              return { minutes: newMinutes, seconds: newSeconds };
+            });
+          }, 1000);
+        }
+    
+        return () => clearInterval(intervalId);
+      }, [timerStatus]);
+
     return (
         <div className="tasks-container">
             <div className="tasks-div">
@@ -116,7 +139,7 @@ function Tasks({timerStatus}) {
                                         <div className="round">
                                             <input
                                                 type="checkbox"
-                                                id={`task-done-${task.id}`} // Unique id for each checkbox
+                                                id={`task-done-${task.id}`}
                                                 className="task-done"
                                                 onChange={() => handleTaskCompletion(task.id)}
                                                 checked={task.completed}
@@ -128,6 +151,7 @@ function Tasks({timerStatus}) {
                                         {task.task}
                                     </p>
                                     <p>exp.time: {task.expected_time}</p>
+                                    <h1>{`${time.minutes.toString().padStart(2, '0')}:${time.seconds.toString().padStart(2, '0')}`}</h1>
                                     <div>
                                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
                                     </div>
@@ -136,7 +160,7 @@ function Tasks({timerStatus}) {
                         </div>
                     ) : (
                         <p>No tasks available</p>
-                    )} 
+                    )}
 
                 </div>
                 <div className="add-task">

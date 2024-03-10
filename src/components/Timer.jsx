@@ -46,10 +46,10 @@ function Timer({ onSelectMode, onStatusChange }) {
 
   useEffect(() => {
     if (selectedMode === 'Pomodoro' && isRunning === true) {
-      onStatusChange('working');
+      onStatusChange(true);
     }
     else {
-      onStatusChange('notWorking')
+      onStatusChange(false);
     }
   })
 
