@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { invoke } from '@tauri-apps/api/tauri';
+import Tasks from "./Tasks";
 
 function Timer({ onSelectMode }) {
 
@@ -179,7 +180,6 @@ function Timer({ onSelectMode }) {
 
 
   return (
-
     <div className="box" style={{ backgroundColor: boxColor, transition: 'background-color 0.7s ease-in-out' }}>
       <div className="topButtons">
         <button className={`button ${selectedMode === "Pomodoro" ? "selected" : ""}`} onClick={() => selectMode("Pomodoro")}>Pomodoro</button>

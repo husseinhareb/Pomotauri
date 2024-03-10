@@ -8,7 +8,6 @@ function App() {
     <div>
       <Navbar />
       <Pomodoro />
-      <Tasks />
     </div>
   );
 }

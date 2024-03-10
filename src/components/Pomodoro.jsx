@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Timer from './Timer';
 import "../styles/Pomodoro.css"
+import Tasks from './Tasks';
 function Pomodoro() {
     const [selectedMode, setSelectedMode] = useState('Pomodoro');
     let backgroundColor = '';
@@ -18,8 +19,11 @@ function Pomodoro() {
     }
 
     return (
-        <div className='pomodoroBox' style={{ backgroundColor: backgroundColor, transition: 'background-color 0.7s ease-in-out' }}>
-            <Timer onSelectMode={handleSelectedModeChange} />
+        <div>
+            <div className='pomodoroBox' style={{ backgroundColor: backgroundColor, transition: 'background-color 0.7s ease-in-out' }}>
+                <Timer onSelectMode={handleSelectedModeChange} />
+            </div>
+            <Tasks />
         </div>
     );
 }

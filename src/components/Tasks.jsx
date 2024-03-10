@@ -33,7 +33,7 @@ function Tasks() {
             if (Array.isArray(response)) {
                 const uniqueTasks = response.filter((task, index, self) =>
                     index === self.findIndex(t => t.id === task.id)
-                ).map(task => ({...task, running: false, elapsed_time: 0}));
+                ).map(task => ({ ...task, running: false, elapsed_time: 0 }));
                 setTasks(uniqueTasks);
             } else {
                 console.error('Invalid response format:', response);
@@ -116,21 +116,23 @@ function Tasks() {
                         <div className="task-list">
                             {tasks.map(task => (
                                 <div key={task.id} className="task-item">
-                                    <div class="checkbox-wrapper">
-                                        <div class="round">
-                                            <input type="checkbox"
-                                                id="task-done"
+                                    <div className="checkbox-wrapper">
+                                        <div className="round">
+                                            <input
+                                                type="checkbox"
+                                                id={`task-done-${task.id}`} // Unique id for each checkbox
                                                 className="task-done"
                                                 onChange={() => handleTaskCompletion(task.id)}
-                                                checked={task.completed} />
-                                            <label for="task-done"></label>
+                                                checked={task.completed}
+                                            />
+                                            <label htmlFor={`task-done-${task.id}`}></label> {/* Use htmlFor instead of 'for' */}
                                         </div>
                                     </div>
                                     <p style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
                                         {task.task}
                                     </p>
                                     <p>exp.time: {task.expected_time}</p>
-                                    <p>Elapsed time: {Math.floor(task.elapsed_time / 60)}:{(task.elapsed_time % 60).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false})}</p>
+                                    <p>Elapsed time: {Math.floor(task.elapsed_time / 60)}:{(task.elapsed_time % 60).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}</p>
                                     <div>
                                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
                                     </div>
@@ -139,7 +141,8 @@ function Tasks() {
                         </div>
                     ) : (
                         <p>No tasks available</p>
-                    )}
+                    )} 
+
                 </div>
                 <div className="add-task">
                     {showInput && (
