@@ -8,7 +8,7 @@ function Timer({ onSelectMode, onStatusChange }) {
   const [longBreak, setLongBreak] = useState({ minutes: 15, seconds: 0 });
   const [time, setTime] = useState(defaultPomodoroTime);
   const [isRunning, setIsRunning] = useState(false);
-  const [isPaused, setIsPaused] = useState(false); // New state for pause status
+  const [isPaused, setIsPaused] = useState(false);
   const [selectedMode, setSelectedMode] = useState("Pomodoro");
   const [boxColor, setBoxColor] = useState("");
   const [btnColor, setBtnColor] = useState("");
@@ -102,7 +102,7 @@ function Timer({ onSelectMode, onStatusChange }) {
   const selectMode = (mode) => {
     setSelectedMode(mode);
     setIsRunning(false);
-    setIsPaused(false); // Reset pause status when mode changes
+    setIsPaused(false);
     onSelectMode(mode);
     setBoxColor(modeOptions[mode].boxColor);
     setBtnColor(modeOptions[mode].btnColor);
@@ -113,7 +113,7 @@ function Timer({ onSelectMode, onStatusChange }) {
   const startTimer = () => {
     playBtnSound();
     setIsRunning(prevIsRunning => !prevIsRunning);
-    setIsPaused(false); // Reset pause status when timer starts
+    setIsPaused(false);
   };
 
   const pauseTimer = () => {
@@ -135,7 +135,7 @@ function Timer({ onSelectMode, onStatusChange }) {
     playBtnSound();
     handleModeChange(selectedMode);
     setIsRunning(false);
-    setIsPaused(false); // Reset pause status when timer resets
+    setIsPaused(false);
   };
 
   const handleTimerEnd = () => {
@@ -161,7 +161,7 @@ function Timer({ onSelectMode, onStatusChange }) {
       setCounter(1);
     }
     setIsRunning(false);
-    setIsPaused(false); // Reset pause status when timer skips
+    setIsPaused(false);
   };
   const minutes = time.minutes;
   const seconds = time.seconds;
