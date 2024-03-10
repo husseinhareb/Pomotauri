@@ -13,13 +13,27 @@ function Tasks() {
         fetchTasks();
     }, []);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // Update elapsed time for each task
+            setTasks(prevTasks => prevTasks.map(task => {
+                if (task.running) {
+                    return { ...task, elapsed_time: task.elapsed_time + 1 };
+                }
+                return task;
+            }));
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     const fetchTasks = async () => {
         try {
             const response = await invoke('get_tasks');
             if (Array.isArray(response)) {
                 const uniqueTasks = response.filter((task, index, self) =>
                     index === self.findIndex(t => t.id === task.id)
-                );
+                ).map(task => ({...task, running: false, elapsed_time: 0}));
                 setTasks(uniqueTasks);
             } else {
                 console.error('Invalid response format:', response);
@@ -41,7 +55,7 @@ function Tasks() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newTask = { id: tasks.length + 1, task: taskContent, expected_time: parseInt(taskTime) };
+        const newTask = { id: tasks.length + 1, task: taskContent, expected_time: parseInt(taskTime), running: false, elapsed_time: 0 };
 
         try {
             await invoke("set_task", { data: newTask });
@@ -71,8 +85,8 @@ function Tasks() {
             console.error('Error while deleting task:', error);
         }
     };
-    
-    const handleTaskCompletion = async (taskId) =>{
+
+    const handleTaskCompletion = async (taskId) => {
         try {
             await invoke("delete_task", { id: taskId });
             setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
@@ -102,17 +116,21 @@ function Tasks() {
                         <div className="task-list">
                             {tasks.map(task => (
                                 <div key={task.id} className="task-item">
-                                    <div>
-                                        <input type="checkbox" 
-                                            className="task-done"
-                                            onChange={() => handleTaskCompletion(task.id)}
-                                            checked={task.completed}
-                                        />
+                                    <div class="checkbox-wrapper">
+                                        <div class="round">
+                                            <input type="checkbox"
+                                                id="task-done"
+                                                className="task-done"
+                                                onChange={() => handleTaskCompletion(task.id)}
+                                                checked={task.completed} />
+                                            <label for="task-done"></label>
+                                        </div>
                                     </div>
                                     <p style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
                                         {task.task}
                                     </p>
-                                    <p>{task.expected_time}</p>
+                                    <p>exp.time: {task.expected_time}</p>
+                                    <p>Elapsed time: {Math.floor(task.elapsed_time / 60)}:{(task.elapsed_time % 60).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false})}</p>
                                     <div>
                                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
                                     </div>
