@@ -20,7 +20,7 @@ function Navbar() {
     <nav className="navbar">
       <ul className="left-items">
         <button onClick={() => { window.location.reload(); }} className="title">
-          <img className="appleIco" src={appleIco} alt="Icon" /> Pomodoro
+          <img className="appleIco" src={appleIco} alt="Icon" /> Pomotauri
         </button>
         <li>
           <Clock />

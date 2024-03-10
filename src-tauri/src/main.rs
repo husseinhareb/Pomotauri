@@ -122,9 +122,44 @@ async fn get_tasks(app_handle: AppHandle) -> Result<Vec<Task>, String> {
 }
 
 
+#[tauri::command]
+fn delete_task(app_handle: AppHandle, id: u32) -> Result<(), String> {
+    let app_dir = app_handle
+        .path_resolver()
+        .app_data_dir()
+        .expect("The app data directory should exist.");
+
+    let tasks_file_path = app_dir.join("tasks.json");
+    let tasks_content = match fs::read_to_string(&tasks_file_path) {
+        Ok(content) => content,
+        Err(err) => return Err(format!("Error reading tasks file: {}", err)),
+    };
+
+    let mut tasks: Vec<Task> = match serde_json::from_str(&tasks_content) {
+        Ok(tasks) => tasks,
+        Err(err) => return Err(format!("Error deserializing tasks: {}", err)),
+    };
+
+    let index = tasks.iter().position(|task| task.id == id);
+    if let Some(index) = index {
+        tasks.remove(index);
+
+        let serialized_tasks = serde_json::to_string_pretty(&tasks)
+            .map_err(|err| format!("Error serializing tasks: {}", err))?;
+
+        if let Err(err) = fs::write(&tasks_file_path, serialized_tasks) {
+            return Err(format!("Error writing to tasks file: {}", err));
+        }
+
+        Ok(())
+    } else {
+        Err(format!("Task with ID {} not found", id))
+    }
+}
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![set_config, get_config, set_task,get_tasks])
+        .invoke_handler(tauri::generate_handler![set_config, get_config, set_task,get_tasks,delete_task])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

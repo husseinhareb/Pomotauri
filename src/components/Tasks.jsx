@@ -47,7 +47,7 @@ function Tasks() {
         try {
             await invoke("set_task", { data: newTask });
             console.log(newTask);
-            setTasks(prevTasks => [...prevTasks, newTask]); // Update tasks state with the new task
+            setTasks(prevTasks => [...prevTasks, newTask])
             setShowInput(false);
             setTaskContent("");
             setTaskTime(25);
@@ -64,9 +64,13 @@ function Tasks() {
         setTaskTime(e.target.value);
     };
 
-    const handleDeleteTask = (taskId) => {
-        const updatedTasks = tasks.filter(task => task.id !== taskId);
-        setTasks(updatedTasks);
+    const handleDeleteTask = async (taskId) => {
+        try {
+            await invoke("delete_task", { id: taskId });
+            setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+        } catch (error) {
+            console.error('Error while deleting task:', error);
+        }
     };
     
 
