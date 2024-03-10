@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { invoke } from '@tauri-apps/api/tauri';
 import Tasks from "./Tasks";
 
-function Timer({ onSelectMode }) {
+function Timer({ onSelectMode, onStatusChange }) {
 
   const [defaultPomodoroTime, setDefaultPomodoroTime] = useState({ minutes: 25, seconds: 0 });
   const [shortBreak, setShortBreak] = useState({ minutes: 5, seconds: 0 });
@@ -23,12 +23,12 @@ function Timer({ onSelectMode }) {
     LongBreak: { time: longBreak, color: "#854284", btnColor: "#c482c3", boxColor: "#c482c3" }
   };
 
+
   useEffect(() => {
     const fetchConfig = async () => {
       try {
         const response = await invoke('get_config');
         setConfig(response);
-        console.log(response);
         setDefaultPomodoroTime(response.pomodoro_time)
         setShortBreak(response.short_break_time)
         setLongBreak(response.long_break_time)
@@ -44,6 +44,14 @@ function Timer({ onSelectMode }) {
   }, []);
 
 
+  useEffect(() => {
+    if (selectedMode === 'Pomodoro' && isRunning === true) {
+      onStatusChange('working');
+    }
+    else {
+      onStatusChange('notWorking')
+    }
+  })
 
 
   useEffect(() => {
@@ -177,6 +185,7 @@ function Timer({ onSelectMode }) {
       document.head.appendChild(link);
     }
   }
+
 
 
   return (

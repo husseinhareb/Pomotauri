@@ -3,19 +3,16 @@ import "../styles/Tasks.css";
 import barsIco from "../assets/icons/barsIco.svg";
 import { invoke } from '@tauri-apps/api/tauri';
 
-function Tasks() {
+function Tasks({timerStatus}) {
     const [showInput, setShowInput] = useState(false);
     const [taskContent, setTaskContent] = useState("");
     const [taskTime, setTaskTime] = useState(25);
     const [tasks, setTasks] = useState([]);
-
     useEffect(() => {
         fetchTasks();
     }, []);
-
     useEffect(() => {
         const interval = setInterval(() => {
-            // Update elapsed time for each task
             setTasks(prevTasks => prevTasks.map(task => {
                 if (task.running) {
                     return { ...task, elapsed_time: task.elapsed_time + 1 };
@@ -59,7 +56,6 @@ function Tasks() {
 
         try {
             await invoke("set_task", { data: newTask });
-            console.log(newTask);
             setTasks(prevTasks => [...prevTasks, newTask])
             setShowInput(false);
             setTaskContent("");
@@ -132,7 +128,6 @@ function Tasks() {
                                         {task.task}
                                     </p>
                                     <p>exp.time: {task.expected_time}</p>
-                                    <p>Elapsed time: {Math.floor(task.elapsed_time / 60)}:{(task.elapsed_time % 60).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}</p>
                                     <div>
                                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
                                     </div>

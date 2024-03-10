@@ -3,9 +3,13 @@ import Timer from './Timer';
 import "../styles/Pomodoro.css"
 import Tasks from './Tasks';
 function Pomodoro() {
+    const [timerStatus, setTimerStatus] = useState('notWorking'); 
     const [selectedMode, setSelectedMode] = useState('Pomodoro');
     let backgroundColor = '';
 
+    const handleTimerStatusChange = (status) => {
+        setTimerStatus(status);
+    };
     const handleSelectedModeChange = (mode) => {
         setSelectedMode(mode);
     };
@@ -21,9 +25,9 @@ function Pomodoro() {
     return (
         <div>
             <div className='pomodoroBox' style={{ backgroundColor: backgroundColor, transition: 'background-color 0.7s ease-in-out' }}>
-                <Timer onSelectMode={handleSelectedModeChange} />
+                <Timer onStatusChange={handleTimerStatusChange} onSelectMode={handleSelectedModeChange} />
             </div>
-            <Tasks />
+            <Tasks timerStatus={timerStatus} />
         </div>
     );
 }
