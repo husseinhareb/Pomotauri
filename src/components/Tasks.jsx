@@ -113,6 +113,7 @@ function Tasks({ timerStatus }) {
               }
     
               return { minutes: newMinutes, seconds: newSeconds };
+            
             });
           }, 1000);
         }

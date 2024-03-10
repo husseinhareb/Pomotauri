@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { invoke } from '@tauri-apps/api/tauri';
+import Tasks from "./Tasks";
 
 function Timer({ onSelectMode, onStatusChange }) {
 
@@ -8,11 +9,11 @@ function Timer({ onSelectMode, onStatusChange }) {
   const [longBreak, setLongBreak] = useState({ minutes: 15, seconds: 0 });
   const [time, setTime] = useState(defaultPomodoroTime);
   const [isRunning, setIsRunning] = useState(false);
-  const [isPaused, setIsPaused] = useState(false); // New state for pause status
   const [selectedMode, setSelectedMode] = useState("Pomodoro");
   const [boxColor, setBoxColor] = useState("");
   const [btnColor, setBtnColor] = useState("");
   const [counter, setCounter] = useState(1);
+  const [config, setConfig] = useState(null);
   const [backgroundColor, setBackgroundColor] = useState("#BA4949");
   const [alarmSound] = useState(new Audio('sounds/alarm.mp3'));
   const [buttonSound] = useState(new Audio('sounds/buttonSound.mp3'));
@@ -27,6 +28,7 @@ function Timer({ onSelectMode, onStatusChange }) {
     const fetchConfig = async () => {
       try {
         const response = await invoke('get_config');
+        setConfig(response);
         setDefaultPomodoroTime(response.pomodoro_time)
         setShortBreak(response.short_break_time)
         setLongBreak(response.long_break_time)
@@ -53,22 +55,17 @@ function Timer({ onSelectMode, onStatusChange }) {
 
 
   useEffect(() => {
-    const { boxColor } = modeOptions[selectedMode];
     if (selectedMode && !isRunning) {
-      const { time } = modeOptions[selectedMode];
-      if(!isPaused){
-        setTime(time);
-      }
+      const { time, boxColor } = modeOptions[selectedMode];
+      setTime(time);
       setBoxColor(boxColor);
       setBtnColor(btnColor);
     }
   }, [selectedMode, isRunning, shortBreak, longBreak, defaultPomodoroTime]);
 
-
   useEffect(() => {
     if (time <= 0 && isRunning) {
       handleTimerEnd();
-      setTime(time);
     }
   }, [time, isRunning, selectedMode]);
 
@@ -102,7 +99,6 @@ function Timer({ onSelectMode, onStatusChange }) {
   const selectMode = (mode) => {
     setSelectedMode(mode);
     setIsRunning(false);
-    setIsPaused(false); // Reset pause status when mode changes
     onSelectMode(mode);
     setBoxColor(modeOptions[mode].boxColor);
     setBtnColor(modeOptions[mode].btnColor);
@@ -112,14 +108,9 @@ function Timer({ onSelectMode, onStatusChange }) {
 
   const startTimer = () => {
     playBtnSound();
-    setIsRunning(prevIsRunning => !prevIsRunning);
-    setIsPaused(false); // Reset pause status when timer starts
-  };
+  setIsRunning(prevIsRunning => !prevIsRunning); 
+};
 
-  const pauseTimer = () => {
-    setIsPaused(true);
-    setIsRunning(false);
-  }
 
 
   const handleModeChange = (mode) => {
@@ -135,7 +126,6 @@ function Timer({ onSelectMode, onStatusChange }) {
     playBtnSound();
     handleModeChange(selectedMode);
     setIsRunning(false);
-    setIsPaused(false); // Reset pause status when timer resets
   };
 
   const handleTimerEnd = () => {
@@ -161,7 +151,6 @@ function Timer({ onSelectMode, onStatusChange }) {
       setCounter(1);
     }
     setIsRunning(false);
-    setIsPaused(false); // Reset pause status when timer skips
   };
   const minutes = time.minutes;
   const seconds = time.seconds;
@@ -216,7 +205,7 @@ function Timer({ onSelectMode, onStatusChange }) {
           <div className="countdown">
             {minutes < 10 ? "0" : ""}
             {minutes}:</div>
-          <button className="start" onClick={isRunning ? pauseTimer : startTimer} style={{ color: btnColor, transition: 'background-color 0.7s ease-in-out' }}>
+          <button className="start" onClick={startTimer} style={{ color: btnColor, transition: 'background-color 0.7s ease-in-out' }}>
             {isRunning ? "PAUSE" : "START"}
           </button>
         </span>
