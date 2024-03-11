@@ -53,9 +53,8 @@ function Timer({ onSelectMode, onStatusChange }) {
 
 
   useEffect(() => {
-    const { boxColor } = modeOptions[selectedMode];
     if (selectedMode && !isRunning) {
-      const { time } = modeOptions[selectedMode];
+      const { time,boxColor } = modeOptions[selectedMode];
       if(!isPaused){
         setTime(time);
       }

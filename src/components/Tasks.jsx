@@ -8,9 +8,13 @@ function Tasks({ timerStatus }) {
     const [taskContent, setTaskContent] = useState("");
     const [taskTime, setTaskTime] = useState(25);
     const [tasks, setTasks] = useState([]);
-    const [time, setTime] = useState({ minutes: 0, seconds: 0 }); useEffect(() => {
+    const [time, setTime] = useState({ minutes: 0, seconds: 0 });
+    const [selectedTaskId, setSelectedTaskId] = useState(null);
+
+    useEffect(() => {
         fetchTasks();
     }, []);
+
     useEffect(() => {
         const interval = setInterval(() => {
             setTasks(prevTasks => prevTasks.map(task => {
@@ -32,6 +36,10 @@ function Tasks({ timerStatus }) {
                     index === self.findIndex(t => t.id === task.id)
                 ).map(task => ({ ...task, running: false, elapsed_time: 0 }));
                 setTasks(uniqueTasks);
+                // Set the first task as selected by default
+                if (uniqueTasks.length > 0) {
+                    setSelectedTaskId(uniqueTasks[0].id);
+                }
             } else {
                 console.error('Invalid response format:', response);
             }
@@ -56,7 +64,7 @@ function Tasks({ timerStatus }) {
 
         try {
             await invoke("set_task", { data: newTask });
-            setTasks(prevTasks => [...prevTasks, newTask])
+            setTasks(prevTasks => [...prevTasks, newTask]);
             setShowInput(false);
             setTaskContent("");
             setTaskTime(25);
@@ -97,6 +105,9 @@ function Tasks({ timerStatus }) {
         }));
     }
 
+    const handleTaskClick = (taskId) => {
+        setSelectedTaskId(taskId);
+    };
 
     useEffect(() => {
         let intervalId;
@@ -135,7 +146,7 @@ function Tasks({ timerStatus }) {
                     {tasks && tasks.length > 0 ? (
                         <div className="task-list">
                             {tasks.map(task => (
-                                <div key={task.id} className="task-item">
+                                <div key={task.id} className={`task-item ${selectedTaskId === task.id ? 'selected' : ''}`} onClick={() => handleTaskClick(task.id)}>
                                     <div className="checkbox-wrapper">
                                         <div className="round">
                                             <input
@@ -145,7 +156,7 @@ function Tasks({ timerStatus }) {
                                                 onChange={() => handleTaskCompletion(task.id)}
                                                 checked={task.completed}
                                             />
-                                            <label htmlFor={`task-done-${task.id}`}></label> {/* Use htmlFor instead of 'for' */}
+                                            <label htmlFor={`task-done-${task.id}`}></label>
                                         </div>
                                     </div>
                                     <p style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
