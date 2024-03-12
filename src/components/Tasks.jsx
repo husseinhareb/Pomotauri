@@ -36,7 +36,6 @@ function Tasks({ timerStatus }) {
                     index === self.findIndex(t => t.id === task.id)
                 ).map(task => ({ ...task, running: false, elapsed_time: 0 }));
                 setTasks(uniqueTasks);
-                // Set the first task as selected by default
                 if (uniqueTasks.length > 0) {
                     setSelectedTaskId(uniqueTasks[0].id);
                 }
@@ -90,20 +89,30 @@ function Tasks({ timerStatus }) {
         }
     };
 
-    const handleTaskCompletion = async (taskId) => {
+    const handleTaskCompletion = async (taskId, event) => {
+        const isChecked = event.target.checked;
+    
         try {
-            await invoke("delete_task", { id: taskId });
-            setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+            if (isChecked) {
+                await invoke("delete_task", { id: taskId });
+                setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+            } else {
+                const taskToUpdate = tasks.find(task => task.id === taskId);
+                await invoke("set_task", { data: taskToUpdate });
+            }
         } catch (error) {
-            console.error('Error while deleting task:', error);
+            console.error('Error while updating task:', error);
         }
+    
         setTasks(tasks.map(task => {
             if (task.id === taskId) {
                 return { ...task, completed: !task.completed };
             }
             return task;
         }));
-    }
+    };
+    
+
 
     const handleTaskClick = (taskId) => {
         setSelectedTaskId(taskId);
@@ -111,26 +120,26 @@ function Tasks({ timerStatus }) {
 
     useEffect(() => {
         let intervalId;
-    
+
         if (timerStatus) {
-          intervalId = setInterval(() => {
-            setTime(prevTime => {
-              let newSeconds = prevTime.seconds + 1;
-              let newMinutes = prevTime.minutes;
-    
-              if (newSeconds === 60) {
-                newMinutes++;
-                newSeconds = 0;
-              }
-    
-              return { minutes: newMinutes, seconds: newSeconds };
-            
-            });
-          }, 1000);
+            intervalId = setInterval(() => {
+                setTime(prevTime => {
+                    let newSeconds = prevTime.seconds + 1;
+                    let newMinutes = prevTime.minutes;
+
+                    if (newSeconds === 60) {
+                        newMinutes++;
+                        newSeconds = 0;
+                    }
+
+                    return { minutes: newMinutes, seconds: newSeconds };
+
+                });
+            }, 1000);
         }
-    
+
         return () => clearInterval(intervalId);
-      }, [timerStatus]);
+    }, [timerStatus]);
 
     return (
         <div className="tasks-container">
@@ -153,7 +162,7 @@ function Tasks({ timerStatus }) {
                                                 type="checkbox"
                                                 id={`task-done-${task.id}`}
                                                 className="task-done"
-                                                onChange={() => handleTaskCompletion(task.id)}
+                                                onChange={(event) => handleTaskCompletion(task.id, event)}
                                                 checked={task.completed}
                                             />
                                             <label htmlFor={`task-done-${task.id}`}></label>
