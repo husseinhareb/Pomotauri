@@ -28,6 +28,29 @@ function Tasks({ timerStatus }) {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        let intervalId;
+
+        if (timerStatus) {
+            intervalId = setInterval(() => {
+                setTime(prevTime => {
+                    let newSeconds = prevTime.seconds + 1;
+                    let newMinutes = prevTime.minutes;
+
+                    if (newSeconds === 60) {
+                        newMinutes++;
+                        newSeconds = 0;
+                    }
+
+                    return { minutes: newMinutes, seconds: newSeconds };
+
+                });
+            }, 1000);
+        }
+
+        return () => clearInterval(intervalId);
+    }, [timerStatus]);
+
     const fetchTasks = async () => {
         try {
             const response = await invoke('get_tasks');
@@ -112,34 +135,9 @@ function Tasks({ timerStatus }) {
         }));
     };
     
-
-
     const handleTaskClick = (taskId) => {
         setSelectedTaskId(taskId);
     };
-
-    useEffect(() => {
-        let intervalId;
-
-        if (timerStatus) {
-            intervalId = setInterval(() => {
-                setTime(prevTime => {
-                    let newSeconds = prevTime.seconds + 1;
-                    let newMinutes = prevTime.minutes;
-
-                    if (newSeconds === 60) {
-                        newMinutes++;
-                        newSeconds = 0;
-                    }
-
-                    return { minutes: newMinutes, seconds: newSeconds };
-
-                });
-            }, 1000);
-        }
-
-        return () => clearInterval(intervalId);
-    }, [timerStatus]);
 
     return (
         <div className="tasks-container">
@@ -172,7 +170,9 @@ function Tasks({ timerStatus }) {
                                         {task.task}
                                     </p>
                                     <p>exp.time: {task.expected_time}</p>
-                                    <h1>{`${time.minutes.toString().padStart(2, '0')}:${time.seconds.toString().padStart(2, '0')}`}</h1>
+                                    {selectedTaskId === task.id && (
+                                        <h1>{`${time.minutes.toString().padStart(2, '0')}:${time.seconds.toString().padStart(2, '0')}`}</h1>
+                                    )}
                                     <div>
                                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
                                     </div>
@@ -182,7 +182,6 @@ function Tasks({ timerStatus }) {
                     ) : (
                         <p>No tasks available</p>
                     )}
-
                 </div>
                 <div className="add-task">
                     {showInput && (
