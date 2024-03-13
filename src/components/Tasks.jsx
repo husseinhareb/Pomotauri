@@ -46,30 +46,18 @@ function Tasks({ timerStatus }) {
                         minutes: newMinutes,
                         seconds: newSeconds
                     };
-                    console.log(newMinutes+":"+newSeconds);
-                    console.log(updatedWorkedTime);
                     const updatedTask = {
                         ...selectedTask,
                         worked_time: updatedWorkedTime
                     };
-                     invoke("delete_task", { id: selectedTaskId });
-                     invoke("set_task", { data: updatedTask });
-                    console.log(updatedTask);
+                    invoke("delete_task", { id: selectedTaskId });
+                    invoke("set_task", { data: updatedTask });
                     return { minutes: newMinutes, seconds: newSeconds };
                 });
             }, 1000);
-
         }
         return () => clearInterval(intervalId);
     }, [timerStatus, selectedTaskId]);
-
-
-
-
-
-
-
-
 
     const fetchTasks = async () => {
         try {
@@ -80,7 +68,8 @@ function Tasks({ timerStatus }) {
                 ).map(task => ({ ...task, running: false, elapsed_time: 0 }));
                 setTasks(uniqueTasks);
                 if (uniqueTasks.length > 0) {
-                    setSelectedTaskId(uniqueTasks[0].id);
+                    setSelectedTaskId(uniqueTasks[0].id); 
+                    setTime(uniqueTasks[0].worked_time);
                 }
             } else {
                 console.error('Invalid response format:', response);
@@ -89,6 +78,7 @@ function Tasks({ timerStatus }) {
             console.error('Error while fetching tasks:', error);
         }
     };
+    
 
     const addTask = () => {
         if (!showInput) {
@@ -109,7 +99,6 @@ function Tasks({ timerStatus }) {
             worked_time: { minutes: 0, seconds: 0 },
             running: false,
         };
-
 
         try {
             await invoke("set_task", { data: newTask });
@@ -164,17 +153,12 @@ function Tasks({ timerStatus }) {
         }));
     };
 
-
-
-
-
     const handleTaskClick = (taskId) => {
         setSelectedTaskId(taskId);
         const selectedTask = tasks.find(task => task.id === taskId);
         const workedTime = selectedTask ? selectedTask.worked_time : { minutes: 0, seconds: 0 };
         setTime(workedTime);
     };
-
 
     return (
         <div className="tasks-container">
@@ -206,12 +190,12 @@ function Tasks({ timerStatus }) {
                                     <p style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
                                         {task.task}
                                     </p>
-                                    <div>
-                                        Time worked: {time.minutes.toString().padStart(2, '0')}:{time.seconds.toString().padStart(2, '0')}
-                                    </div>
-
-                                    <p>exp.time: {task.expected_time}</p>
-
+                                    {selectedTaskId === task.id && (
+                                        <div>
+                                            Time worked: {time.minutes.toString().padStart(2, '0')}:{time.seconds.toString().padStart(2, '0')}
+                                        </div>
+                                    )}
+                                    <p>exp.time: {task.expected_time}:00</p>
                                     <div>
                                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
                                     </div>
