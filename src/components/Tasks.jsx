@@ -30,9 +30,9 @@ function Tasks({ timerStatus }) {
 
     useEffect(() => {
         let intervalId;
-
-        if (timerStatus) {
-            intervalId = setInterval(() => {
+        const selectedTask = tasks.find(task => task.id === selectedTaskId);
+        if (timerStatus && selectedTaskId) {
+            intervalId = setInterval(async () => {
                 setTime(prevTime => {
                     let newSeconds = prevTime.seconds + 1;
                     let newMinutes = prevTime.minutes;
@@ -42,14 +42,34 @@ function Tasks({ timerStatus }) {
                         newSeconds = 0;
                     }
 
+                    const updatedWorkedTime = {
+                        minutes: newMinutes,
+                        seconds: newSeconds
+                    };
+                    console.log(newMinutes+":"+newSeconds);
+                    console.log(updatedWorkedTime);
+                    const updatedTask = {
+                        ...selectedTask,
+                        worked_time: updatedWorkedTime
+                    };
+                     invoke("delete_task", { id: selectedTaskId });
+                     invoke("set_task", { data: updatedTask });
+                    console.log(updatedTask);
                     return { minutes: newMinutes, seconds: newSeconds };
-
                 });
             }, 1000);
-        }
 
+        }
         return () => clearInterval(intervalId);
-    }, [timerStatus]);
+    }, [timerStatus, selectedTaskId]);
+
+
+
+
+
+
+
+
 
     const fetchTasks = async () => {
         try {
@@ -82,7 +102,14 @@ function Tasks({ timerStatus }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newTask = { id: tasks.length + 1, task: taskContent, expected_time: parseInt(taskTime), running: false, elapsed_time: 0 };
+        const newTask = {
+            id: tasks.length + 1,
+            task: taskContent,
+            expected_time: parseInt(taskTime),
+            worked_time: { minutes: 0, seconds: 0 },
+            running: false,
+        };
+
 
         try {
             await invoke("set_task", { data: newTask });
@@ -114,30 +141,40 @@ function Tasks({ timerStatus }) {
 
     const handleTaskCompletion = async (taskId, event) => {
         const isChecked = event.target.checked;
-    
+        const currentTime = time;
+
         try {
             if (isChecked) {
                 await invoke("delete_task", { id: taskId });
                 setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
             } else {
                 const taskToUpdate = tasks.find(task => task.id === taskId);
+                taskToUpdate.worked_time = currentTime; // Update worked_time with the current time
                 await invoke("set_task", { data: taskToUpdate });
             }
         } catch (error) {
             console.error('Error while updating task:', error);
         }
-    
+
         setTasks(tasks.map(task => {
             if (task.id === taskId) {
-                return { ...task, completed: !task.completed };
+                return { ...task, completed: !task.completed, worked_time: currentTime };
             }
             return task;
         }));
     };
-    
+
+
+
+
+
     const handleTaskClick = (taskId) => {
         setSelectedTaskId(taskId);
+        const selectedTask = tasks.find(task => task.id === taskId);
+        const workedTime = selectedTask ? selectedTask.worked_time : { minutes: 0, seconds: 0 };
+        setTime(workedTime);
     };
+
 
     return (
         <div className="tasks-container">
@@ -169,10 +206,12 @@ function Tasks({ timerStatus }) {
                                     <p style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
                                         {task.task}
                                     </p>
+                                    <div>
+                                        Time worked: {time.minutes.toString().padStart(2, '0')}:{time.seconds.toString().padStart(2, '0')}
+                                    </div>
+
                                     <p>exp.time: {task.expected_time}</p>
-                                    {selectedTaskId === task.id && (
-                                        <h1>{`${time.minutes.toString().padStart(2, '0')}:${time.seconds.toString().padStart(2, '0')}`}</h1>
-                                    )}
+
                                     <div>
                                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
                                     </div>

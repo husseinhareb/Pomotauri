@@ -22,7 +22,8 @@ pub struct TimerSettings {
 pub struct Task {
     pub id: u32,
     pub task: String,
-    pub expected_time: u32, 
+    pub expected_time: u32,
+    pub worked_time: TimerDuration,
 }
 
 #[tauri::command]
@@ -100,6 +101,8 @@ fn set_task(app_handle: AppHandle, data: Task) -> Result<(), String> {
 }
 
 
+const DEFAULT_WORKED_TIME: TimerDuration = TimerDuration { minutes: 0, seconds: 0 };
+
 #[tauri::command]
 async fn get_tasks(app_handle: AppHandle) -> Result<Vec<Task>, String> {
     let app_dir = app_handle
@@ -113,13 +116,20 @@ async fn get_tasks(app_handle: AppHandle) -> Result<Vec<Task>, String> {
         Err(err) => return Err(format!("Error reading tasks file: {}", err)),
     };
 
-    let tasks: Vec<Task> = match serde_json::from_str(&content) {
+    let mut tasks: Vec<Task> = match serde_json::from_str(&content) {
         Ok(tasks) => tasks,
         Err(err) => return Err(format!("Error deserializing tasks: {}", err)),
     };
 
+    for task in &mut tasks {
+        if task.worked_time.minutes >= 60 {
+                    task.worked_time = DEFAULT_WORKED_TIME;
+        }
+    }
+
     Ok(tasks)
 }
+
 
 
 #[tauri::command]
