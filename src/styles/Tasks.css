@@ -8,6 +8,7 @@
 .tasks-div {
     height: 100px;
     width: 500px;
+    
 }
 
 .top-task {
@@ -26,6 +27,10 @@
     border: 0px;
 }
 
+.task-list{
+    overflow: auto;
+    height: 280px;
+}
 .add-task {
     background-color: transparent;
 }
@@ -146,4 +151,19 @@ input[type="number"]::-webkit-outer-spin-button {
     margin-top: 2px;
     margin-bottom: 2px;
     cursor: pointer;
+}
+
+
+@keyframes expand {
+    from {
+        height: 0;
+    }
+    to {
+        height: 140px;
+    }
+}
+
+.new-task {
+    overflow: hidden; 
+    animation: expand 0.4s ease forwards;
 }

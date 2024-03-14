@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "../styles/Tasks.css";
 import barsIco from "../assets/icons/barsIco.svg";
+import plusIco from "../assets/icons/plusIco.svg";
 import { invoke } from '@tauri-apps/api/tauri';
 
 function Tasks({ timerStatus }) {
@@ -203,7 +204,7 @@ function Tasks({ timerStatus }) {
                     </button>
                 </div>
                 <hr />
-                <div className="task-list">
+                <div>
                     {tasks && tasks.length > 0 ? (
                         <div className="task-list">
                             {tasks.map(task => (
@@ -251,9 +252,8 @@ function Tasks({ timerStatus }) {
                                     placeholder="Enter your task"
                                     className="task-input"
                                 />
-                                <label htmlFor="task-time">Task Time:</label>
+                                <label className="task-time-label" htmlFor="task-time">Task Time:</label>
                                 <div>
-                                    <button onClick={decrementTaskTime}>-</button>
                                     <input
                                         type="number"
                                         id="task-time"
@@ -262,6 +262,7 @@ function Tasks({ timerStatus }) {
                                         min="1"
                                         className="task-time"
                                     />
+                                    <button onClick={decrementTaskTime}>-</button>
                                     <button onClick={incrementTaskTime}>+</button>
                                 </div>
                                 <div className="new-task-bottom">
