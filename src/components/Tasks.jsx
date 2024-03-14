@@ -92,6 +92,12 @@ function Tasks({ timerStatus }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const trimmedTaskContent = taskContent.trim(); // Remove leading and trailing spaces
+        if (trimmedTaskContent === "") {
+            alert("Please enter a non-empty value for the task content.");
+            return; // Prevent form submission
+        }
+    
         const newTask = {
             id: uuidv4(),
             task: taskContent,
@@ -99,7 +105,7 @@ function Tasks({ timerStatus }) {
             worked_time: { minutes: 0, seconds: 0 },
             running: false,
         };
-
+    
         try {
             await invoke("set_task", { data: newTask });
             setTasks(prevTasks => [...prevTasks, newTask]);
@@ -110,9 +116,11 @@ function Tasks({ timerStatus }) {
             console.error('Error while sending data to backend:', error);
         }
     };
+    
 
     const handleTaskContent = (e) => {
-        setTaskContent(e.target.value);
+        const trimmedValue = e.target.value.trimStart();
+        setTaskContent(trimmedValue);
     };
 
     const handleTaskTime = (e) => {
@@ -155,7 +163,6 @@ function Tasks({ timerStatus }) {
 
     const handleTaskClick = async (taskId) => {
         setSelectedTaskId(taskId);
-        const selectedTask = tasks.find(task => task.id === taskId);
         try {
             const response = await invoke('get_tasks');
             if (Array.isArray(response)) {
@@ -209,10 +216,11 @@ function Tasks({ timerStatus }) {
                                     </p>
                                     {selectedTaskId === task.id && (
                                         <div>
-                                            Time worked: {time.minutes.toString().padStart(2, '0')}:{time.seconds.toString().padStart(2, '0')}
+                                            <p>Time worked: {time.minutes.toString().padStart(2, '0')}:{time.seconds.toString().padStart(2, '0')}</p>
+                                            <p>exp.time: {task.expected_time}:00</p>
+
                                         </div>
                                     )}
-                                    <p>exp.time: {task.expected_time}:00</p>
                                     <div>
                                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
                                     </div>
@@ -238,6 +246,7 @@ function Tasks({ timerStatus }) {
                                     type="number"
                                     onChange={handleTaskTime}
                                     value={taskTime}
+                                    min="1"
                                     className="task-time"
                                 />
                                 <div className="new-task-bottom">
