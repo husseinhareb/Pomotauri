@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import "../styles/Tasks.css";
 import barsIco from "../assets/icons/barsIco.svg";
 import { invoke } from '@tauri-apps/api/tauri';
@@ -68,7 +69,7 @@ function Tasks({ timerStatus }) {
                 ).map(task => ({ ...task, running: false, elapsed_time: 0 }));
                 setTasks(uniqueTasks);
                 if (uniqueTasks.length > 0) {
-                    setSelectedTaskId(uniqueTasks[0].id); 
+                    setSelectedTaskId(uniqueTasks[0].id);
                     setTime(uniqueTasks[0].worked_time);
                 }
             } else {
@@ -78,9 +79,8 @@ function Tasks({ timerStatus }) {
             console.error('Error while fetching tasks:', error);
         }
     };
-    
 
-    const addTask = () => {
+    const addTask = async () => {
         if (!showInput) {
             setShowInput(true);
         }
@@ -93,7 +93,7 @@ function Tasks({ timerStatus }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newTask = {
-            id: tasks.length + 1,
+            id: uuidv4(),
             task: taskContent,
             expected_time: parseInt(taskTime),
             worked_time: { minutes: 0, seconds: 0 },
@@ -138,7 +138,7 @@ function Tasks({ timerStatus }) {
                 setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
             } else {
                 const taskToUpdate = tasks.find(task => task.id === taskId);
-                taskToUpdate.worked_time = currentTime; // Update worked_time with the current time
+                taskToUpdate.worked_time = currentTime;
                 await invoke("set_task", { data: taskToUpdate });
             }
         } catch (error) {
@@ -153,12 +153,29 @@ function Tasks({ timerStatus }) {
         }));
     };
 
-    const handleTaskClick = (taskId) => {
+    const handleTaskClick = async (taskId) => {
         setSelectedTaskId(taskId);
         const selectedTask = tasks.find(task => task.id === taskId);
-        const workedTime = selectedTask ? selectedTask.worked_time : { minutes: 0, seconds: 0 };
-        setTime(workedTime);
+        try {
+            const response = await invoke('get_tasks');
+            if (Array.isArray(response)) {
+                const task = response.find(task => task.id === taskId);
+                if (task) {
+                    console.log(task);
+                    const workedTime = task ? task.worked_time : { minutes: 0, seconds: 0 };
+                    setTime(workedTime);
+                } else {
+                    console.log("Task with taskId not found in the response");
+                }
+            } else {
+                console.error('Invalid response format:', response);
+            }
+        } catch (error) {
+            console.error('Error while fetching tasks:', error);
+        }
+
     };
+
 
     return (
         <div className="tasks-container">

@@ -1,6 +1,3 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
 use serde::{Deserialize, Serialize};
 use std::fs;
 use tauri::{AppHandle};
@@ -20,7 +17,7 @@ pub struct TimerSettings {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Task {
-    pub id: u32,
+    pub id: String, // Change type to String
     pub task: String,
     pub expected_time: u32,
     pub worked_time: TimerDuration,
@@ -68,7 +65,6 @@ async fn get_config(app_handle: AppHandle) -> Result<TimerSettings, String> {
     Ok(config)
 }
 
-
 #[tauri::command]
 fn set_task(app_handle: AppHandle, data: Task) -> Result<(), String> {
     let app_dir = app_handle
@@ -80,7 +76,7 @@ fn set_task(app_handle: AppHandle, data: Task) -> Result<(), String> {
         .map_err(|err| format!("Error creating directory: {}", err))?;
 
     let config_file_path = app_dir.join("tasks.json");
-    
+
     let mut tasks: Vec<Task> = if let Ok(content) = fs::read_to_string(&config_file_path) {
         serde_json::from_str(&content).unwrap_or_else(|_| Vec::new())
     } else {
@@ -97,9 +93,7 @@ fn set_task(app_handle: AppHandle, data: Task) -> Result<(), String> {
     }
 
     Ok(())
-
 }
-
 
 const DEFAULT_WORKED_TIME: TimerDuration = TimerDuration { minutes: 0, seconds: 0 };
 
@@ -123,17 +117,15 @@ async fn get_tasks(app_handle: AppHandle) -> Result<Vec<Task>, String> {
 
     for task in &mut tasks {
         if task.worked_time.minutes >= 60 {
-                    task.worked_time = DEFAULT_WORKED_TIME;
+            task.worked_time = DEFAULT_WORKED_TIME;
         }
     }
 
     Ok(tasks)
 }
 
-
-
 #[tauri::command]
-fn delete_task(app_handle: AppHandle, id: u32) -> Result<(), String> {
+fn delete_task(app_handle: AppHandle, id: String) -> Result<(), String> {
     let app_dir = app_handle
         .path_resolver()
         .app_data_dir()
@@ -169,7 +161,7 @@ fn delete_task(app_handle: AppHandle, id: u32) -> Result<(), String> {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![set_config, get_config, set_task,get_tasks,delete_task])
+        .invoke_handler(tauri::generate_handler![set_config, get_config, set_task, get_tasks, delete_task])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
