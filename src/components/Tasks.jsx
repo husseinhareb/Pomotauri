@@ -252,8 +252,8 @@ function Tasks({ timerStatus }) {
                                     placeholder="Enter your task"
                                     className="task-input"
                                 />
-                                <label className="task-time-label" htmlFor="task-time">Task Time:</label>
-                                <div>
+                                <label className="task-time-label" htmlFor="task-time">Estimated Time (min):</label>
+                                <div className="time-wrapper" >
                                     <input
                                         type="number"
                                         id="task-time"
@@ -262,11 +262,13 @@ function Tasks({ timerStatus }) {
                                         min="1"
                                         className="task-time"
                                     />
-                                    <button onClick={decrementTaskTime}>-</button>
-                                    <button onClick={incrementTaskTime}>+</button>
+                                    <div className="time-buttons-div">
+                                        <button className="increment-button" onClick={decrementTaskTime}>-</button>
+                                        <button className="decrement-button" onClick={incrementTaskTime}>+</button>
+                                    </div>
                                 </div>
                                 <div className="new-task-bottom">
-                                    <button  onClick={handleCancel} className="cancel-button">
+                                    <button onClick={handleCancel} className="cancel-button">
                                         Cancel
                                     </button>
                                     <button type="submit" className="add-button">Add</button>

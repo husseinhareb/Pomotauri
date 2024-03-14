@@ -76,13 +76,27 @@
     border-radius: 8px;
     padding: 6px;
     color: #858585;
+    outline: none;
 }
 
 .task-time-label{
-    margin-left: 20px;
+    margin-left: 26px;
+    color: #858585;
+    font-weight: lighter;
 }
 
-
+.time-wrapper {
+    display: flex;
+    align-items: center;
+}
+.time-buttons-div{
+    margin-left: 10px;
+}
+.increment-button,.decrement-button{
+    height: 30px;
+    margin-left: 3px;
+    font-size: 16px;
+}
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
