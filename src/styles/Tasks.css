@@ -60,6 +60,24 @@
     margin-bottom: 10px;
 }
 
+.task-time{
+    width: 50px;
+    font-size: 18px;
+    margin-left: 24px;
+    margin-bottom: 10px;
+}
+
+.task-time-label{
+    margin-left: 20px;
+}
+
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .new-task-bottom {
     background-color: #EFEFEF;
     bottom: 10px;

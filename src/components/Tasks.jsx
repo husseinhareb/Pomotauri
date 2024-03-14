@@ -92,12 +92,12 @@ function Tasks({ timerStatus }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const trimmedTaskContent = taskContent.trim(); // Remove leading and trailing spaces
+        const trimmedTaskContent = taskContent.trim();
         if (trimmedTaskContent === "") {
             alert("Please enter a non-empty value for the task content.");
-            return; // Prevent form submission
+            return;
         }
-    
+
         const newTask = {
             id: uuidv4(),
             task: taskContent,
@@ -105,7 +105,7 @@ function Tasks({ timerStatus }) {
             worked_time: { minutes: 0, seconds: 0 },
             running: false,
         };
-    
+
         try {
             await invoke("set_task", { data: newTask });
             setTasks(prevTasks => [...prevTasks, newTask]);
@@ -116,7 +116,7 @@ function Tasks({ timerStatus }) {
             console.error('Error while sending data to backend:', error);
         }
     };
-    
+
 
     const handleTaskContent = (e) => {
         const trimmedValue = e.target.value.trimStart();
@@ -183,6 +183,15 @@ function Tasks({ timerStatus }) {
 
     };
 
+    const incrementTaskTime = () => {
+        setTaskTime(prevTime => parseInt(prevTime) + 1);
+    };
+
+    const decrementTaskTime = () => {
+        setTaskTime(prevTime => Math.max(parseInt(prevTime) - 1, 1));
+    };
+
+
 
     return (
         <div className="tasks-container">
@@ -242,13 +251,19 @@ function Tasks({ timerStatus }) {
                                     placeholder="Enter your task"
                                     className="task-input"
                                 />
-                                <input
-                                    type="number"
-                                    onChange={handleTaskTime}
-                                    value={taskTime}
-                                    min="1"
-                                    className="task-time"
-                                />
+                                <label htmlFor="task-time">Task Time:</label>
+                                <div>
+                                    <button onClick={decrementTaskTime}>-</button>
+                                    <input
+                                        type="number"
+                                        id="task-time"
+                                        onChange={handleTaskTime}
+                                        value={taskTime}
+                                        min="1"
+                                        className="task-time"
+                                    />
+                                    <button onClick={incrementTaskTime}>+</button>
+                                </div>
                                 <div className="new-task-bottom">
                                     <button onClick={handleCancel} className="cancel-button">
                                         Cancel
@@ -256,6 +271,7 @@ function Tasks({ timerStatus }) {
                                     <button type="submit" className="add-button">Add</button>
                                 </div>
                             </div>
+
                         </form>
                     )}
                     <button className="add-task-btn" onClick={addTask}>Add Task</button>
