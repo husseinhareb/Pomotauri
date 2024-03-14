@@ -266,7 +266,7 @@ function Tasks({ timerStatus }) {
                                     <button onClick={incrementTaskTime}>+</button>
                                 </div>
                                 <div className="new-task-bottom">
-                                    <button onClick={handleCancel} className="cancel-button">
+                                    <button  onClick={handleCancel} className="cancel-button">
                                         Cancel
                                     </button>
                                     <button type="submit" className="add-button">Add</button>

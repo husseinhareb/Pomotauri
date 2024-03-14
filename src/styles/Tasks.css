@@ -67,9 +67,15 @@
 
 .task-time{
     width: 50px;
-    font-size: 18px;
+    font-size: 20px;
     margin-left: 24px;
+    margin-top: 4px;
     margin-bottom: 10px;
+    background-color: #EFEFEF;
+    border: 0px;
+    border-radius: 8px;
+    padding: 6px;
+    color: #858585;
 }
 
 .task-time-label{
@@ -88,18 +94,38 @@ input[type="number"]::-webkit-outer-spin-button {
     bottom: 10px;
     margin-top: auto;
     height: 30%;
-}
-
-.new-task-bottom {
     display: flex;
     justify-content: flex-end;
 }
 
+
+
 .cancel-button,
 .add-button {
-    margin-left: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border: 0px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
+.add-button{
+    color: white;
+    background-color: rgb(46, 46, 56);
+}
+.add-button:hover{
+    background-color: rgb(31, 25, 25);
+}
+.cancel-button{
+    color: #998e8e;
+    background-color: transparent;
+}
+.cancel-button:hover{
+    color: #5f5b5b;
+}
 .checkbox-wrapper .round {
     position: relative;
 }
@@ -159,7 +185,7 @@ input[type="number"]::-webkit-outer-spin-button {
         height: 0;
     }
     to {
-        height: 140px;
+        height: 160px;
     }
 }
 
@@ -167,3 +193,4 @@ input[type="number"]::-webkit-outer-spin-button {
     overflow: hidden; 
     animation: expand 0.4s ease forwards;
 }
+
