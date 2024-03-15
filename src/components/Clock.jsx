@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function Clock() {
     const getTime = () => new Date();
 
     const [time, setTime] = useState(getTime());
 
-    const update = () => {
-        setTime(getTime());
-    }
-    setInterval(update, 1000);
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setTime(getTime());
+        }, 1000);
+
+        return () => clearInterval(intervalId); 
+    }, []); 
+
     const formattedTime = time.toLocaleTimeString();
 
     return (
