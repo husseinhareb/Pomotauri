@@ -172,7 +172,8 @@ function Timer({ onSelectMode, onStatusChange }) {
     alarmSound.play();
   }
 
-
+  const minutes = time.minutes;
+  const seconds = time.seconds;
 
   return (
     <div className="box" style={{ backgroundColor: boxColor, transition: 'background-color 0.7s ease-in-out' }}>

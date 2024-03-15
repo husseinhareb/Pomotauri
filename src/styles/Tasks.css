@@ -17,19 +17,33 @@
 }
 
 .task-title {
-    color: aliceblue;
+    color: #e0dcdc;
     font-weight: 600;
     font-size: 16px;
+}
+.task-title:hover{
+    color: #fff;
 }
 
 .tasks-settings {
     background-color: transparent;
     border: 0px;
+    font-size: 20px;
+    color: #e0dcdc;
+    cursor: pointer;
+}
+.tasks-settings:hover{
+    color: #fff;
 }
 
+.task-hr{
+    border: none;
+    height: 2px; 
+    background-color: #fff;
+}
 .task-list{
     overflow: auto;
-    height: 280px;
+    max-height: 280px;
 }
 .add-task {
     background-color: transparent;
@@ -39,17 +53,27 @@
     width: 100%;
     height: 60px;
     background-color: transparent;
-    border: 2px dotted #ffffff;
+    border: 2px dashed #e0dcdc;
     cursor: pointer;
+    border-radius: 8px;
+    outline:none ;
+    color: #e0dcdc;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 5px;
 
 }
-
+.add-task-btn:hover{
+    color: #ffffff;
+    border: 2px dashed #ffffff;
+}
 .new-task {
     width: 100%;
     height: 120px;
     background-color: rgb(255, 255, 255);
     border-radius: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 5px;
+    margin-top: 5px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -96,7 +120,9 @@
     height: 30px;
     margin-left: 3px;
     font-size: 16px;
+    cursor: pointer;
 }
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -193,6 +219,12 @@ input[type="number"]::-webkit-outer-spin-button {
     cursor: pointer;
 }
 
+.delete-task{
+    border: 0px;
+    background-color: transparent;
+    font-size: 18px;
+    color: #e0dcdc;
+}
 
 @keyframes expand {
     from {

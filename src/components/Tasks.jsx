@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import "../styles/Tasks.css";
-import barsIco from "../assets/icons/barsIco.svg";
-import plusIco from "../assets/icons/plusIco.svg";
 import { invoke } from '@tauri-apps/api/tauri';
+import "../styles/Tasks.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faMinus, faPlus, faSquarePlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-function Tasks({ timerStatus }) {
+function Tasks({ timerStatus , selectedMode }) {
     const [showInput, setShowInput] = useState(false);
     const [taskContent, setTaskContent] = useState("");
     const [taskTime, setTaskTime] = useState(25);
@@ -200,10 +200,10 @@ function Tasks({ timerStatus }) {
                 <div className="top-task">
                     <p className="task-title">Tasks</p>
                     <button className="tasks-settings">
-                        S <img src={barsIco} alt="Icon" />
+                        <FontAwesomeIcon icon={faBars} />
                     </button>
                 </div>
-                <hr />
+                <hr className="task-hr"/>
                 <div>
                     {tasks && tasks.length > 0 ? (
                         <div className="task-list">
@@ -232,7 +232,7 @@ function Tasks({ timerStatus }) {
                                         </div>
                                     )}
                                     <div>
-                                        <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+                                        <button className="delete-task" onClick={() => handleDeleteTask(task.id)}><FontAwesomeIcon icon={faTrash}/></button>
                                     </div>
                                 </div>
                             ))}
@@ -263,8 +263,8 @@ function Tasks({ timerStatus }) {
                                         className="task-time"
                                     />
                                     <div className="time-buttons-div">
-                                        <button className="increment-button" onClick={decrementTaskTime}>-</button>
-                                        <button className="decrement-button" onClick={incrementTaskTime}>+</button>
+                                        <button className="increment-button" onClick={decrementTaskTime}><FontAwesomeIcon icon={faMinus}/></button>
+                                        <button className="decrement-button" onClick={incrementTaskTime}><FontAwesomeIcon icon={faPlus}/></button>
                                     </div>
                                 </div>
                                 <div className="new-task-bottom">
@@ -277,7 +277,7 @@ function Tasks({ timerStatus }) {
 
                         </form>
                     )}
-                    <button className="add-task-btn" onClick={addTask}>Add Task</button>
+                    <button className="add-task-btn" onClick={addTask}><FontAwesomeIcon icon={faSquarePlus}/> Add Task</button>
                 </div>
             </div>
         </div>
