@@ -43,7 +43,7 @@
 }
 .task-list{
     overflow: hidden;
-    max-height: 327px;
+    max-height:262px;
 }
 
 .task-list:hover{
