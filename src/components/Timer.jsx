@@ -162,23 +162,7 @@ function Timer({ onSelectMode, onStatusChange }) {
     setIsRunning(false);
     setIsPaused(false);
   };
-  const minutes = time.minutes;
-  const seconds = time.seconds;
 
-  useEffect(() => {
-    if (selectedMode === 'Pomodoro') {
-      setFavicon('icons/pomodoroIco.svg');
-      document.title = `${minutes}:${seconds < 10 ? "0" : ""}${seconds} - Focus! :|`;
-    }
-    else if (selectedMode === 'ShortBreak') {
-      setFavicon('icons/shortBreakIco.svg');
-      document.title = `${minutes}:${seconds < 10 ? "0" : ""}${seconds} - Short Break! :)`;
-    }
-    else if (selectedMode === 'LongBreak') {
-      setFavicon('icons/longBreakIco.svg');
-      document.title = `${minutes}:${seconds < 10 ? "0" : ""}${seconds} - Go Outside :D`;
-    }
-  }, [time]);
 
   const playBtnSound = () => {
     buttonSound.play();
@@ -186,18 +170,6 @@ function Timer({ onSelectMode, onStatusChange }) {
   }
   const playAlarm = () => {
     alarmSound.play();
-  }
-
-  function setFavicon(url) {
-    const favicon = document.querySelector('link[rel="icon"]');
-    if (favicon !== null) {
-      favicon.href = url;
-    } else {
-      const link = document.createElement('link');
-      link.rel = 'icon';
-      link.href = url;
-      document.head.appendChild(link);
-    }
   }
 
 
