@@ -27,7 +27,7 @@ function Pomodoro() {
             <div className='pomodoroBox' style={{ backgroundColor: backgroundColor, transition: 'background-color 0.7s ease-in-out' }}>
                 <Timer onStatusChange={handleTimerStatusChange} onSelectMode={handleSelectedModeChange} />
             </div>
-            <Tasks timerStatus={timerStatus} selectedMode={selectedMode}/>
+            <Tasks timerStatus={timerStatus} />
         </div>
     );
 }

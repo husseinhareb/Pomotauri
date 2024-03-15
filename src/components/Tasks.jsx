@@ -5,7 +5,7 @@ import "../styles/Tasks.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faMinus, faPlus, faSquarePlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-function Tasks({ timerStatus , selectedMode }) {
+function Tasks({ timerStatus }) {
     const [showInput, setShowInput] = useState(false);
     const [taskContent, setTaskContent] = useState("");
     const [taskTime, setTaskTime] = useState(25);
@@ -208,29 +208,32 @@ function Tasks({ timerStatus , selectedMode }) {
                     {tasks && tasks.length > 0 ? (
                         <div className="task-list">
                             {tasks.map(task => (
-                                <div key={task.id} className={`task-item ${selectedTaskId === task.id ? 'selected' : ''}`} onClick={() => handleTaskClick(task.id)}>
-                                    <div className="checkbox-wrapper">
-                                        <div className="round">
-                                            <input
-                                                type="checkbox"
-                                                id={`task-done-${task.id}`}
-                                                className="task-done"
-                                                onChange={(event) => handleTaskCompletion(task.id, event)}
-                                                checked={task.completed}
-                                            />
-                                            <label htmlFor={`task-done-${task.id}`}></label>
+                                <div key={task.id} className={`task-item ${selectedTaskId === task.id ? 'selected-task' : ''}`} onClick={() => handleTaskClick(task.id)}>
+                                    <div className="task-content-wrapper">
+                                        <div className="task-content-left">
+                                            <div className="checkbox-wrapper">
+                                                <div className="round">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`task-done-${task.id}`}
+                                                        className="task-done"
+                                                        onChange={(event) => handleTaskCompletion(task.id, event)}
+                                                        checked={task.completed}
+                                                    />
+                                                    <label htmlFor={`task-done-${task.id}`}></label>
+                                                </div>
+                                            </div>
+                                            <p className="task-content" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+                                                {task.task}
+                                            </p>
                                         </div>
+                                        {selectedTaskId === task.id && (
+                                            <div className="timers-div">
+                                                <p className="time-worked">Time worked: {time.minutes.toString().padStart(2, '0')}:{time.seconds.toString().padStart(2, '0')}</p>
+                                                <p className="est-time">Est. time: {task.expected_time}:00</p>
+                                            </div>
+                                        )}
                                     </div>
-                                    <p style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
-                                        {task.task}
-                                    </p>
-                                    {selectedTaskId === task.id && (
-                                        <div>
-                                            <p>Time worked: {time.minutes.toString().padStart(2, '0')}:{time.seconds.toString().padStart(2, '0')}</p>
-                                            <p>exp.time: {task.expected_time}:00</p>
-
-                                        </div>
-                                    )}
                                     <div>
                                         <button className="delete-task" onClick={() => handleDeleteTask(task.id)}><FontAwesomeIcon icon={faTrash}/></button>
                                     </div>
@@ -274,7 +277,6 @@ function Tasks({ timerStatus , selectedMode }) {
                                     <button type="submit" className="add-button">Add</button>
                                 </div>
                             </div>
-
                         </form>
                     )}
                     <button className="add-task-btn" onClick={addTask}><FontAwesomeIcon icon={faSquarePlus}/> Add Task</button>
@@ -282,6 +284,6 @@ function Tasks({ timerStatus , selectedMode }) {
             </div>
         </div>
     );
-}
+1}    
 
 export default Tasks;

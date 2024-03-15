@@ -49,7 +49,7 @@ function Timer({ onSelectMode, onStatusChange }) {
     else {
       onStatusChange(false);
     }
-  })
+  },[])
 
 
   useEffect(() => {
