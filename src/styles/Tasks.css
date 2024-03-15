@@ -42,8 +42,12 @@
     background-color: #fff;
 }
 .task-list{
+    overflow: hidden;
+    max-height: 327px;
+}
+
+.task-list:hover{
     overflow: auto;
-    max-height: 280px;
 }
 .add-task {
     background-color: transparent;
@@ -235,8 +239,6 @@ input[type="number"]::-webkit-outer-spin-button {
     margin-bottom: 2px;
     cursor: pointer;
     border-radius: 6px;
-
-
     align-items: center;
     text-align: center;
     opacity: 0.9;
@@ -246,6 +248,7 @@ input[type="number"]::-webkit-outer-spin-button {
     color: rgb(85, 85, 85);
     border: 1px solid rgb(223, 223, 223);
     box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 2px;
+    height: 45px;
 }
 
 .task-item:hover{
@@ -261,6 +264,10 @@ input[type="number"]::-webkit-outer-spin-button {
     cursor: pointer;
 }
 
+.delete-task:hover{
+    color: #858585;
+
+}
 @keyframes expand {
     from {
         height: 0;
@@ -275,19 +282,25 @@ input[type="number"]::-webkit-outer-spin-button {
     animation: expand 0.4s ease forwards;
 }
 .selected-task{
-    border-left: 5px solid white;
+    border-left: 5px solid #222222;
+}
+.selected-task:hover{
+    border-left: 5px solid #222222;
 }
 
 .timers-div{
-    border-left: 2px solid white;
+    border-left: 2px solid #222222;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     margin-right: 10px;
+    line-height: 2%;  
+    padding-left: 4px;
 }
 
 .est-time{
     font-size: 10px;
+    margin-right: 54px;
 }
 
 .task-content-left {
@@ -302,6 +315,6 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .round{
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 3px;
+    margin-right: 8px;
 }
