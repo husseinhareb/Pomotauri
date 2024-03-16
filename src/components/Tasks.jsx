@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { invoke } from '@tauri-apps/api/tauri';
 import "../styles/Tasks.css";
@@ -13,6 +13,8 @@ function Tasks({ timerStatus }) {
     const [time, setTime] = useState({ minutes: 0, seconds: 0 });
     const [selectedTaskId, setSelectedTaskId] = useState(null);
     const [showSettings, setShowSettings] = useState(false);
+    const settingsRef = useRef(null);
+
     useEffect(() => {
         fetchTasks();
     }, []);
@@ -186,6 +188,41 @@ function Tasks({ timerStatus }) {
         setShowSettings(!showSettings);
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+                setShowSettings(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const clearCompletedTasks = () => {
+        const updatedTasks = tasks.filter(task => !task.completed);
+        setTasks(updatedTasks);
+        setShowSettings(false);
+    };
+    
+    
+    const clearAllTasks = async () => {
+        try {
+            for (const task of tasks) {
+                await invoke("delete_task", { id: task.id });
+            }
+            setTasks([]);
+            setSelectedTaskId(null);
+            setTime({ minutes: 0, seconds: 0 });
+        } catch (error) {
+            console.error('Error while clearing all tasks:', error);
+        }
+        setShowSettings(false);
+    };
+    
 
     return (
         <div className="tasks-container">
@@ -196,9 +233,9 @@ function Tasks({ timerStatus }) {
                         <FontAwesomeIcon icon={faBars} />
                     </button>
                     {showSettings && (
-                        <div className="task-settings">
-                            <button type="button" className="tasks-clear"><FontAwesomeIcon icon={faTrashCan}/>Clear all tasks</button>
-                            <button type="button" className="tasks-done-clear"><FontAwesomeIcon icon={faCircleCheck}/>Clear finished tasks</button>
+                        <div ref={settingsRef} className="task-settings">
+                            <button type="button" className="tasks-done-clear" onClick={clearCompletedTasks}><FontAwesomeIcon className="tasks-done-clear-icon" icon={faCircleCheck} /> Clear finished tasks</button>
+                            <button type="button" className="tasks-clear" onClick={clearAllTasks}><FontAwesomeIcon icon={faTrashCan} className="tasks-clear-icon"/> Clear all tasks</button>
                         </div>
                     )}
                 </div>
@@ -243,7 +280,7 @@ function Tasks({ timerStatus }) {
                             ))}
                         </div>
                     ) : (
-                        <p>No tasks available</p>
+                        <p className="no-tasks-sentence">No tasks available.</p>
                     )}
                 </div>
                 <div className="add-task">

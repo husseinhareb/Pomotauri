@@ -20,6 +20,7 @@
     color: #e0dcdc;
     font-weight: 600;
     font-size: 16px;
+    cursor: default;
 }
 
 .task-title:hover {
@@ -359,16 +360,45 @@ input[type="number"]::-webkit-outer-spin-button {
     position: absolute;
     top: calc(100% + 5px);
     right: 0;
-    width: 120px;
-    height: 50px;
+    width: 160px;
+    height: 90px;
     background-color: white;
     border: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 9999;
     border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .tasks-clear, .tasks-done-clear{
     width: 100%;
-    margin: 5px;
+    margin-top: 5px;
+    background-color: white;
+    border: 0px;
+    display: flex;
+    align-items: flex-start;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.tasks-clear:hover,.tasks-done-clear:hover{
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+
+.tasks-clear-icon, .tasks-done-clear-icon{
+    margin-right: 5px;
+}
+
+.no-tasks-sentence{
+    color: #e0dcdc;
+    font-weight: bold;
+    cursor: default;
+}
+
+.no-tasks-sentence:hover{
+    color: white;
 }
