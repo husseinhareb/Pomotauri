@@ -325,3 +325,29 @@ input[type="number"]::-webkit-outer-spin-button {
     margin-left: 3px;
     margin-right: 8px;
 }
+
+.top-task {
+    position: relative;
+  }
+  
+  .tasks-settings {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  
+  .task-settings {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 0;
+    padding: 10px;
+    width: 120px;
+    height: 150px;
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    border-radius: 8px;
+  }
+  

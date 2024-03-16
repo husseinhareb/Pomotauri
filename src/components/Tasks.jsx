@@ -12,6 +12,7 @@ function Tasks({ timerStatus }) {
     const [tasks, setTasks] = useState([]);
     const [time, setTime] = useState({ minutes: 0, seconds: 0 });
     const [selectedTaskId, setSelectedTaskId] = useState(null);
+    const [showSettings, setShowSettings] = useState(false);
     useEffect(() => {
         fetchTasks();
     }, []);
@@ -19,18 +20,18 @@ function Tasks({ timerStatus }) {
     useEffect(() => {
         let intervalId;
         const selectedTask = tasks.find(task => task.id === selectedTaskId);
-        
-        if (timerStatus && selectedTaskId && !selectedTask.completed) { // Check if timer should be active and task is not completed
+
+        if (timerStatus && selectedTaskId && !selectedTask.completed) {
             intervalId = setInterval(async () => {
                 setTime(prevTime => {
                     let newSeconds = prevTime.seconds + 1;
                     let newMinutes = prevTime.minutes;
-    
+
                     if (newSeconds === 60) {
                         newMinutes++;
                         newSeconds = 0;
                     }
-    
+
                     const updatedWorkedTime = {
                         minutes: newMinutes,
                         seconds: newSeconds
@@ -45,10 +46,10 @@ function Tasks({ timerStatus }) {
                 });
             }, 1000);
         }
-        
+
         return () => clearInterval(intervalId);
-    }, [timerStatus, selectedTaskId, tasks]); // Include 'tasks' dependency
-    
+    }, [timerStatus, selectedTaskId, tasks]);
+
 
     const fetchTasks = async () => {
         try {
@@ -181,6 +182,9 @@ function Tasks({ timerStatus }) {
         setTaskTime(prevTime => Math.max(parseInt(prevTime) - 1, 1));
     };
 
+    const toggleSettings = () => {
+        setShowSettings(!showSettings);
+    };
 
 
     return (
@@ -188,9 +192,14 @@ function Tasks({ timerStatus }) {
             <div className="tasks-div">
                 <div className="top-task">
                     <p className="task-title">Tasks</p>
-                    <button className="tasks-settings">
+                    <button className="tasks-settings" onClick={toggleSettings}>
                         <FontAwesomeIcon icon={faBars} />
                     </button>
+                    {showSettings && (
+                        <div className="task-settings">
+                            lol
+                        </div>
+                    )}
                 </div>
                 <hr className="task-hr" />
                 <div>
@@ -206,7 +215,10 @@ function Tasks({ timerStatus }) {
                                                         type="checkbox"
                                                         id={`task-done-${task.id}`}
                                                         className="task-done"
-                                                        onChange={(event) => handleTaskCompletion(task.id, event)}
+                                                        onChange={(event) => {
+                                                            event.stopPropagation();
+                                                            handleTaskCompletion(task.id, event)
+                                                        }}
                                                         checked={task.completed}
                                                     />
                                                     <label htmlFor={`task-done-${task.id}`}></label>
