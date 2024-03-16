@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { invoke } from '@tauri-apps/api/tauri';
 import "../styles/Tasks.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faMinus, faPlus, faSquarePlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCircleCheck, faMinus, faPlus, faSquarePlus, faTrash, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 function Tasks({ timerStatus }) {
     const [showInput, setShowInput] = useState(false);
@@ -197,7 +197,8 @@ function Tasks({ timerStatus }) {
                     </button>
                     {showSettings && (
                         <div className="task-settings">
-                            lol
+                            <button type="button" className="tasks-clear"><FontAwesomeIcon icon={faTrashCan}/>Clear all tasks</button>
+                            <button type="button" className="tasks-done-clear"><FontAwesomeIcon icon={faCircleCheck}/>Clear finished tasks</button>
                         </div>
                     )}
                 </div>

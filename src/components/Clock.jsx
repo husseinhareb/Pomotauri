@@ -10,8 +10,8 @@ function Clock() {
             setTime(getTime());
         }, 1000);
 
-        return () => clearInterval(intervalId); 
-    }, []); 
+        return () => clearInterval(intervalId);
+    }, []);
 
     const formattedTime = time.toLocaleTimeString();
 

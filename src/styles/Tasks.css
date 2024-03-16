@@ -8,7 +8,7 @@
 .tasks-div {
     height: 100px;
     width: 500px;
-    
+
 }
 
 .top-task {
@@ -21,7 +21,8 @@
     font-weight: 600;
     font-size: 16px;
 }
-.task-title:hover{
+
+.task-title:hover {
     color: #fff;
 }
 
@@ -32,23 +33,26 @@
     color: #e0dcdc;
     cursor: pointer;
 }
-.tasks-settings:hover{
+
+.tasks-settings:hover {
     color: #fff;
 }
 
-.task-hr{
+.task-hr {
     border: none;
-    height: 2px; 
+    height: 2px;
     background-color: #fff;
 }
-.task-list{
+
+.task-list {
     overflow: hidden;
-    max-height:262px;
+    max-height: 262px;
 }
 
-.task-list:hover{
+.task-list:hover {
     overflow: auto;
 }
+
 .add-task {
     background-color: transparent;
 }
@@ -60,17 +64,19 @@
     border: 2px dashed #e0dcdc;
     cursor: pointer;
     border-radius: 8px;
-    outline:none ;
+    outline: none;
     color: #e0dcdc;
     font-size: 20px;
     font-weight: bold;
     margin-top: 5px;
 
 }
-.add-task-btn:hover{
+
+.add-task-btn:hover {
     color: #ffffff;
     border: 2px dashed #ffffff;
 }
+
 .new-task {
     width: 100%;
     background-color: #ffffff;
@@ -86,13 +92,13 @@
     width: 90%;
     margin: 0 auto;
     margin-top: 10px;
-    border: 0px ;
+    border: 0px;
     outline: none;
     font-size: 30px;
     margin-bottom: 10px;
 }
 
-.task-time{
+.task-time {
     width: 50px;
     font-size: 20px;
     margin-left: 24px;
@@ -106,7 +112,7 @@
     outline: none;
 }
 
-.task-time-label{
+.task-time-label {
     margin-left: 26px;
     color: #858585;
     font-weight: lighter;
@@ -117,13 +123,16 @@
     flex-direction: row;
     align-items: center;
 }
-.time-buttons-div{
+
+.time-buttons-div {
     margin-left: 10px;
     margin-top: 6px;
     margin-bottom: 10px;
 
 }
-.increment-button,.decrement-button{
+
+.increment-button,
+.decrement-button {
     -moz-box-align: center;
     align-items: center;
     -moz-box-pack: center;
@@ -174,20 +183,24 @@ input[type="number"]::-webkit-outer-spin-button {
     cursor: pointer;
 }
 
-.add-button{
+.add-button {
     color: white;
     background-color: rgb(46, 46, 56);
 }
-.add-button:hover{
+
+.add-button:hover {
     background-color: rgb(31, 25, 25);
 }
-.cancel-button{
+
+.cancel-button {
     color: #998e8e;
     background-color: transparent;
 }
-.cancel-button:hover{
+
+.cancel-button:hover {
     color: #5f5b5b;
 }
+
 .checkbox-wrapper .round {
     position: relative;
 }
@@ -230,6 +243,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .checkbox-wrapper .round input[type="checkbox"]:checked+label:after {
     opacity: 1;
 }
+
 .checkbox-wrapper {
     position: relative;
 }
@@ -238,7 +252,8 @@ input[type="number"]::-webkit-outer-spin-button {
     position: absolute;
     opacity: 0;
 }
-.task-item{
+
+.task-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -258,12 +273,12 @@ input[type="number"]::-webkit-outer-spin-button {
     height: 45px;
 }
 
-.task-item:hover{
+.task-item:hover {
     border-left: 5px solid #e0dcdc;
 
 }
 
-.delete-task{
+.delete-task {
     border: 0px;
     background-color: transparent;
     font-size: 18px;
@@ -271,41 +286,45 @@ input[type="number"]::-webkit-outer-spin-button {
     cursor: pointer;
 }
 
-.delete-task:hover{
+.delete-task:hover {
     color: #858585;
 
 }
+
 @keyframes expand {
     from {
         height: 0;
     }
+
     to {
         height: 180px;
     }
 }
 
 .new-task {
-    overflow: hidden; 
+    overflow: hidden;
     animation: expand 0.4s ease forwards;
 }
-.selected-task{
-    border-left: 5px solid #222222;
-}
-.selected-task:hover{
+
+.selected-task {
     border-left: 5px solid #222222;
 }
 
-.timers-div{
+.selected-task:hover {
+    border-left: 5px solid #222222;
+}
+
+.timers-div {
     border-left: 2px solid #222222;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     margin-right: 10px;
-    line-height: 2%;  
+    line-height: 2%;
     padding-left: 4px;
 }
 
-.est-time{
+.est-time {
     font-size: 10px;
     margin-right: 54px;
 }
@@ -321,33 +340,35 @@ input[type="number"]::-webkit-outer-spin-button {
     width: 100%;
 }
 
-.round{
+.round {
     margin-left: 3px;
     margin-right: 8px;
 }
 
 .top-task {
     position: relative;
-  }
-  
-  .tasks-settings {
+}
+
+.tasks-settings {
     position: absolute;
     top: 0;
     right: 0;
-  }
-  
-  .task-settings {
+}
+
+.task-settings {
     position: absolute;
     top: calc(100% + 5px);
     right: 0;
-    padding: 10px;
     width: 120px;
-    height: 150px;
+    height: 50px;
     background-color: white;
-    padding: 20px;
     border: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 9999;
     border-radius: 8px;
-  }
-  
+}
+
+.tasks-clear, .tasks-done-clear{
+    width: 100%;
+    margin: 5px;
+}
