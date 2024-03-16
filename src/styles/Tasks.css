@@ -272,11 +272,11 @@ input[type="number"]::-webkit-outer-spin-button {
     border: 1px solid rgb(223, 223, 223);
     box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 2px;
     height: 45px;
+    border-left: 5px solid transparent;
 }
 
 .task-item:hover {
     border-left: 5px solid #e0dcdc;
-
 }
 
 .delete-task {
