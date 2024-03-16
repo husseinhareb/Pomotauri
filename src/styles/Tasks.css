@@ -230,7 +230,14 @@ input[type="number"]::-webkit-outer-spin-button {
 .checkbox-wrapper .round input[type="checkbox"]:checked+label:after {
     opacity: 1;
 }
+.checkbox-wrapper {
+    position: relative;
+}
 
+.checkbox-wrapper input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+}
 .task-item{
     display: flex;
     justify-content: space-between;

@@ -12,38 +12,25 @@ function Tasks({ timerStatus }) {
     const [tasks, setTasks] = useState([]);
     const [time, setTime] = useState({ minutes: 0, seconds: 0 });
     const [selectedTaskId, setSelectedTaskId] = useState(null);
-
     useEffect(() => {
         fetchTasks();
     }, []);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setTasks(prevTasks => prevTasks.map(task => {
-                if (task.running) {
-                    return { ...task, elapsed_time: task.elapsed_time + 1 };
-                }
-                return task;
-            }));
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() => {
         let intervalId;
         const selectedTask = tasks.find(task => task.id === selectedTaskId);
-        if (timerStatus && selectedTaskId) {
+        
+        if (timerStatus && selectedTaskId && !selectedTask.completed) { // Check if timer should be active and task is not completed
             intervalId = setInterval(async () => {
                 setTime(prevTime => {
                     let newSeconds = prevTime.seconds + 1;
                     let newMinutes = prevTime.minutes;
-
+    
                     if (newSeconds === 60) {
                         newMinutes++;
                         newSeconds = 0;
                     }
-
+    
                     const updatedWorkedTime = {
                         minutes: newMinutes,
                         seconds: newSeconds
@@ -58,8 +45,10 @@ function Tasks({ timerStatus }) {
                 });
             }, 1000);
         }
+        
         return () => clearInterval(intervalId);
-    }, [timerStatus, selectedTaskId]);
+    }, [timerStatus, selectedTaskId, tasks]); // Include 'tasks' dependency
+    
 
     const fetchTasks = async () => {
         try {
@@ -67,7 +56,7 @@ function Tasks({ timerStatus }) {
             if (Array.isArray(response)) {
                 const uniqueTasks = response.filter((task, index, self) =>
                     index === self.findIndex(t => t.id === task.id)
-                ).map(task => ({ ...task, running: false, elapsed_time: 0 }));
+                ).map(task => ({ ...task, completed: false, elapsed_time: 0 }));
                 setTasks(uniqueTasks);
                 if (uniqueTasks.length > 0) {
                     setSelectedTaskId(uniqueTasks[0].id);
@@ -104,7 +93,7 @@ function Tasks({ timerStatus }) {
             task: taskContent,
             expected_time: parseInt(taskTime),
             worked_time: { minutes: 0, seconds: 0 },
-            running: false,
+            completed: false,
         };
 
         try {
@@ -203,7 +192,7 @@ function Tasks({ timerStatus }) {
                         <FontAwesomeIcon icon={faBars} />
                     </button>
                 </div>
-                <hr className="task-hr"/>
+                <hr className="task-hr" />
                 <div>
                     {tasks && tasks.length > 0 ? (
                         <div className="task-list">
@@ -235,7 +224,7 @@ function Tasks({ timerStatus }) {
                                         )}
                                     </div>
                                     <div>
-                                        <button className="delete-task" onClick={() => handleDeleteTask(task.id)}><FontAwesomeIcon icon={faTrash}/></button>
+                                        <button className="delete-task" onClick={() => handleDeleteTask(task.id)}><FontAwesomeIcon icon={faTrash} /></button>
                                     </div>
                                 </div>
                             ))}
@@ -266,8 +255,13 @@ function Tasks({ timerStatus }) {
                                         className="task-time"
                                     />
                                     <div className="time-buttons-div">
-                                        <button className="increment-button" onClick={decrementTaskTime}><FontAwesomeIcon icon={faMinus}/></button>
-                                        <button className="decrement-button" onClick={incrementTaskTime}><FontAwesomeIcon icon={faPlus}/></button>
+                                        <button type="button" className="increment-button" onClick={decrementTaskTime}>
+                                            <FontAwesomeIcon icon={faMinus} />
+                                        </button>
+                                        <button type="button" className="decrement-button" onClick={incrementTaskTime}>
+                                            <FontAwesomeIcon icon={faPlus} />
+                                        </button>
+
                                     </div>
                                 </div>
                                 <div className="new-task-bottom">
@@ -279,11 +273,11 @@ function Tasks({ timerStatus }) {
                             </div>
                         </form>
                     )}
-                    <button className="add-task-btn" onClick={addTask}><FontAwesomeIcon icon={faSquarePlus}/> Add Task</button>
+                    <button className="add-task-btn" onClick={addTask}><FontAwesomeIcon icon={faSquarePlus} /> Add Task</button>
                 </div>
             </div>
         </div>
     );
-}    
+}
 
 export default Tasks;
