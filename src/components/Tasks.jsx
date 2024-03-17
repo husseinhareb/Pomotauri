@@ -121,9 +121,9 @@ function Tasks({ timerStatus }) {
     };
 
     const handleDeleteTask = async (taskId) => {
+        setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
         try {
             await invoke("delete_task", { id: taskId });
-            setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
         } catch (error) {
             console.error('Error while deleting task:', error);
         }
@@ -190,10 +190,12 @@ function Tasks({ timerStatus }) {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+            if (settingsRef.current && !settingsRef.current.contains(event.target) && !event.target.closest('.tasks-settings')) {
                 setShowSettings(false);
             }
         };
+        
+
 
         document.addEventListener("mousedown", handleClickOutside);
 
@@ -210,11 +212,12 @@ function Tasks({ timerStatus }) {
     
     
     const clearAllTasks = async () => {
+        setTasks([]);
+
         try {
             for (const task of tasks) {
                 await invoke("delete_task", { id: task.id });
             }
-            setTasks([]);
             setSelectedTaskId(null);
             setTime({ minutes: 0, seconds: 0 });
         } catch (error) {

@@ -33,7 +33,9 @@
     font-size: 20px;
     color: #e0dcdc;
     cursor: pointer;
+    margin-top: 10px;
 }
+
 
 .tasks-settings:hover {
     color: #fff;
