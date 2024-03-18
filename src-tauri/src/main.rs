@@ -20,7 +20,7 @@ pub struct TimerSettings {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Task {
-    pub id: String, // Change type to String
+    pub id: String,
     pub task: String,
     pub expected_time: u32,
     pub worked_time: TimerDuration,
