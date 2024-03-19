@@ -1,10 +1,9 @@
-
 @font-face {
     font-family: 'Arial-Rounded-Bold';
     src: url('../assets/fonts/ttf/Arial-RoundedBold.ttf') format('truetype');
-  }
+}
 
-  
+
 .pomodoroBox {
     background-color: #C15C5C;
     display: flex;
@@ -114,10 +113,7 @@ span {
 }
 
 .start:focus,
-.reset:focus {
-    text-decoration: none;
-}
-
+.reset:focus,
 .start:hover,
 .reset:hover {
     text-decoration: none;
