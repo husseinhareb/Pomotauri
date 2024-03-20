@@ -176,6 +176,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .cancel-button,
 .add-button {
+    outline: none;
     margin-left: 5px;
     margin-right: 5px;
     border: 0px;
@@ -188,6 +189,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .add-button {
     color: white;
+    outline: none;
     background-color: rgb(46, 46, 56);
 }
 
@@ -198,6 +200,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .cancel-button {
     color: #998e8e;
     background-color: transparent;
+    outline: none;
 }
 
 .cancel-button:hover {

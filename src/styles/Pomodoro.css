@@ -56,6 +56,7 @@ span {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    outline: none;
 }
 
 
@@ -63,6 +64,7 @@ span {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    outline: none;
 }
 
 .button {

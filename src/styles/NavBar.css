@@ -45,6 +45,7 @@ li {
     color: #F7E3E3;
     cursor: pointer;
     font-weight: 600;
+    outline: none;
 }
 
 .settingsButton:hover,
