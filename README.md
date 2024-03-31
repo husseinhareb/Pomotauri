@@ -1,5 +1,5 @@
 # Pomotauri
-Pomotauri is a Pomodoro Timer Written in [Tauri](https://tauri.app/) using [React](https://react.dev/) Framework.
+Pomotauri is a Pomodoro Timer Written in [Tauri](https://tauri.app/) Framework and [React](https://react.dev/) .
 
 
 Pomotauri is a simple productivity tool that helps you stay focused and manage your time effectively.
