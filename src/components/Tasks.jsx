@@ -21,36 +21,47 @@ function Tasks({ timerStatus }) {
 
     useEffect(() => {
         let intervalId;
-        const selectedTask = tasks.find(task => task.id === selectedTaskId);
 
-        if (timerStatus && selectedTaskId && !selectedTask.completed) {
-            intervalId = setInterval(async () => {
-                setTime(prevTime => {
-                    let newSeconds = prevTime.seconds + 1;
-                    let newMinutes = prevTime.minutes;
+        if (timerStatus && selectedTaskId) {
+            const selectedTask = tasks.find(task => task.id === selectedTaskId);
 
-                    if (newSeconds === 60) {
-                        newMinutes++;
-                        newSeconds = 0;
-                    }
+            if (selectedTask && !selectedTask.completed) {
+                intervalId = setInterval(async () => {
+                    setTime(prevTime => {
+                        let newSeconds = prevTime.seconds + 1;
+                        let newMinutes = prevTime.minutes;
 
-                    const updatedWorkedTime = {
-                        minutes: newMinutes,
-                        seconds: newSeconds
-                    };
-                    const updatedTask = {
-                        ...selectedTask,
-                        worked_time: updatedWorkedTime
-                    };
-                    invoke("delete_task", { id: selectedTaskId });
-                    invoke("set_task", { data: updatedTask });
-                    return { minutes: newMinutes, seconds: newSeconds };
-                });
-            }, 1000);
+                        if (newSeconds === 60) {
+                            newSeconds = 0;
+                            newMinutes++;
+                        }
+
+                        // Check if an hour has passed
+                        if (newMinutes === 60) {
+                            newMinutes = 0;
+                            setTime({ minutes: 0, seconds: 0 }); // Reset time to 0 if it reaches an hour
+                        }
+
+                        const updatedWorkedTime = {
+                            minutes: newMinutes,
+                            seconds: newSeconds
+                        };
+                        const updatedTask = {
+                            ...selectedTask,
+                            worked_time: updatedWorkedTime
+                        };
+                        invoke("delete_task", { id: selectedTaskId });
+                        invoke("set_task", { data: updatedTask });
+                        return { minutes: newMinutes, seconds: newSeconds };
+                    });
+                }, 1000);
+            }
         }
 
         return () => clearInterval(intervalId);
     }, [timerStatus, selectedTaskId, tasks]);
+
+
 
 
     const fetchTasks = async () => {
@@ -194,7 +205,7 @@ function Tasks({ timerStatus }) {
                 setShowSettings(false);
             }
         };
-        
+
 
 
         document.addEventListener("mousedown", handleClickOutside);
@@ -209,8 +220,8 @@ function Tasks({ timerStatus }) {
         setTasks(updatedTasks);
         setShowSettings(false);
     };
-    
-    
+
+
     const clearAllTasks = async () => {
         setTasks([]);
 
@@ -225,7 +236,7 @@ function Tasks({ timerStatus }) {
         }
         setShowSettings(false);
     };
-    
+
 
     return (
         <div className="tasks-container">
@@ -238,7 +249,7 @@ function Tasks({ timerStatus }) {
                     {showSettings && (
                         <div ref={settingsRef} className="task-settings">
                             <button type="button" className="tasks-done-clear" onClick={clearCompletedTasks}><FontAwesomeIcon className="tasks-done-clear-icon" icon={faCircleCheck} /> Clear finished tasks</button>
-                            <button type="button" className="tasks-clear" onClick={clearAllTasks}><FontAwesomeIcon icon={faTrashCan} className="tasks-clear-icon"/> Clear all tasks</button>
+                            <button type="button" className="tasks-clear" onClick={clearAllTasks}><FontAwesomeIcon icon={faTrashCan} className="tasks-clear-icon" /> Clear all tasks</button>
                         </div>
                     )}
                 </div>
@@ -305,6 +316,7 @@ function Tasks({ timerStatus }) {
                                         onChange={handleTaskTime}
                                         value={taskTime}
                                         min="1"
+                                        max="59"
                                         className="task-time"
                                     />
                                     <div className="time-buttons-div">

@@ -113,6 +113,7 @@ function Settings({ onClose }) {
                 value={pomodoroTime.minutes}
                 onChange={handlePomodoroMinutesChange}
                 min={0}
+                max={60}
               />
             </div>
             <div className="input-field">
@@ -125,6 +126,7 @@ function Settings({ onClose }) {
                 value={pomodoroTime.seconds}
                 onChange={handlePomodoroSecondsChange}
                 min={0}
+                max={60}
               />
             </div>
           </div>
@@ -142,6 +144,7 @@ function Settings({ onClose }) {
                 value={shortBreakTime.minutes}
                 onChange={handleShortBreakMinutesChange}
                 min={0}
+                max={60}
               />
             </div>
             <div className="input-field">
@@ -154,6 +157,7 @@ function Settings({ onClose }) {
                 value={shortBreakTime.seconds}
                 onChange={handleShortBreakSecondsChange}
                 min={0}
+                max={60}
               />
             </div>
           </div>
@@ -171,6 +175,7 @@ function Settings({ onClose }) {
                 value={longBreakTime.minutes}
                 onChange={handleLongBreakMinutesChange}
                 min={0}
+                max={60}
               />
             </div>
             <div className="input-field">
@@ -183,6 +188,7 @@ function Settings({ onClose }) {
                 value={longBreakTime.seconds}
                 onChange={handleLongBreakSecondsChange}
                 min={0}
+                max={60}
               />
             </div>
           </div>
