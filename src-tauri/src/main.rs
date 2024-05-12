@@ -55,11 +55,28 @@ async fn get_config(app_handle: AppHandle) -> Result<TimerSettings, String> {
         .expect("The app data directory should exist.");
 
     let config_file_path = app_dir.join("config.json");
+
+    // Check if the config file exists
+    if !config_file_path.exists() {
+        // Create the config file with default settings if it doesn't exist
+        let default_config = TimerSettings {
+            pomodoro_time: TimerDuration { minutes: 25, seconds: 0 },
+            short_break_time: TimerDuration { minutes: 5, seconds: 0 },
+            long_break_time: TimerDuration { minutes: 15, seconds: 0 },
+        };
+        let serialized_default_config = serde_json::to_string_pretty(&default_config)
+            .map_err(|err| format!("Error serializing default config: {}", err))?;
+        fs::write(&config_file_path, serialized_default_config)
+            .map_err(|err| format!("Error writing default config file: {}", err))?;
+    }
+
+    // Read the content of the config file
     let content = match fs::read_to_string(&config_file_path) {
         Ok(content) => content,
         Err(err) => return Err(format!("Error reading config file: {}", err)),
     };
 
+    // Deserialize the config from the file content
     let config: TimerSettings = match serde_json::from_str(&content) {
         Ok(config) => config,
         Err(err) => return Err(format!("Error deserializing config: {}", err)),
@@ -67,6 +84,7 @@ async fn get_config(app_handle: AppHandle) -> Result<TimerSettings, String> {
 
     Ok(config)
 }
+
 
 #[tauri::command]
 fn set_task(app_handle: AppHandle, data: Task) -> Result<(), String> {
