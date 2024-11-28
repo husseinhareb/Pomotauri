@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { core } from '@tauri-apps/api/';  // Correct import for invoke
+import { core } from '@tauri-apps/api'; 
 
 interface Timer {
   minutes: number;
