@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { core } from '@tauri-apps/api/';
+import { core } from '@tauri-apps/api';
 
 // Define the structure of time objects
 interface Time {

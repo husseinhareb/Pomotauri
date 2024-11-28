@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
-import { core } from '@tauri-apps/api/';
+import { core } from '@tauri-apps/api';
 
 interface Task {
   id: number;
