@@ -1,7 +1,8 @@
+// Navbar.tsx
 import React, { useState } from "react";
 import Clock from "../Clock/Clock";
 import Settings from "../Settings/Settings";
-
+import { NavbarContainer, List, LeftItems, RightItems, Button, ClockText } from "./Styles/style";
 
 // Define the Props interface for the Settings component (if needed)
 interface NavbarProps {
@@ -20,29 +21,35 @@ const Navbar: React.FC<NavbarProps> = () => {
   };
 
   return (
-    <nav className="navbar">
-      <ul className="left-items">
-        <button onClick={() => window.location.reload()} className="title">
-         Pomotauri
-        </button>
-        <li>
-          <Clock />
-        </li>
-      </ul>
-      <ul className="right-items">
-        <li>
-          <button className="homeButton">
-             Home
-          </button>
-        </li>
-        <li>
-          <button onClick={toggleSettings} className="settingsButton">
+    <NavbarContainer>
+      <LeftItems>
+        <Button onClick={() => window.location.reload()} className="title">
+          Pomotauri
+        </Button>
+        <List>
+          <li>
+            <ClockText>
+              <Clock />
+            </ClockText>
+          </li>
+        </List>
+      </LeftItems>
+
+      <RightItems>
+        <List>
+          <li>
+            <Button className="homeButton">Home</Button>
+          </li>
+          <li>
+            <Button onClick={toggleSettings} className="settingsButton">
               Settings
-          </button>
-        </li>
-      </ul>
+            </Button>
+          </li>
+        </List>
+      </RightItems>
+
       {showSettings && <Settings onClose={handleCloseSettings} />}
-    </nav>
+    </NavbarContainer>
   );
 };
 

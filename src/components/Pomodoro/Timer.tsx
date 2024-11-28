@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+// Timer.tsx
+import React, { useState, useEffect } from 'react';
 import { core } from '@tauri-apps/api';
+import { Countdown, ModeButtonWrapper, ModeButton, StartResetButton, ButtonContainer, ResetButton } from './Styles/style';
 
 // Define the structure of time objects
 interface Time {
@@ -14,7 +16,7 @@ interface ModeOptions {
 }
 
 interface TimerProps {
-  onSelectMode: (mode: "Pomodoro" | "ShortBreak" | "LongBreak") => void;
+  onSelectMode: (mode: 'Pomodoro' | 'ShortBreak' | 'LongBreak') => void;
   onStatusChange: (isRunning: boolean) => void;
 }
 
@@ -25,16 +27,16 @@ const Timer: React.FC<TimerProps> = ({ onSelectMode, onStatusChange }) => {
   const [time, setTime] = useState<Time>(defaultPomodoroTime);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [selectedMode, setSelectedMode] = useState<"Pomodoro" | "ShortBreak" | "LongBreak">("Pomodoro");
-  const [boxColor, setBoxColor] = useState<string>("");
-  const [btnColor, setBtnColor] = useState<string>("");
+  const [selectedMode, setSelectedMode] = useState<'Pomodoro' | 'ShortBreak' | 'LongBreak'>('Pomodoro');
+  const [boxColor, setBoxColor] = useState<string>('');
+  const [btnColor, setBtnColor] = useState<string>('');
   const [counter, setCounter] = useState<number>(1);
-  const [backgroundColor, setBackgroundColor] = useState<string>("#BA4949");
+  const [backgroundColor, setBackgroundColor] = useState<string>('#BA4949');
 
   const modeOptions: ModeOptions = {
-    Pomodoro: { time: defaultPomodoroTime, color: "#BA4949", btnColor: "#C15C5C", boxColor: "#C15C5C" },
-    ShortBreak: { time: shortBreak, color: "#428455", btnColor: "#6fa67f", boxColor: "#6fa67f" },
-    LongBreak: { time: longBreak, color: "#854284", btnColor: "#c482c3", boxColor: "#c482c3" }
+    Pomodoro: { time: defaultPomodoroTime, color: '#BA4949', btnColor: '#C15C5C', boxColor: '#C15C5C' },
+    ShortBreak: { time: shortBreak, color: '#428455', btnColor: '#6fa67f', boxColor: '#6fa67f' },
+    LongBreak: { time: longBreak, color: '#854284', btnColor: '#c482c3', boxColor: '#c482c3' }
   };
 
   useEffect(() => {
@@ -110,7 +112,7 @@ const Timer: React.FC<TimerProps> = ({ onSelectMode, onStatusChange }) => {
     document.body.style.backgroundColor = backgroundColor;
   }, [backgroundColor]);
 
-  const selectMode = (mode: "Pomodoro" | "ShortBreak" | "LongBreak") => {
+  const selectMode = (mode: 'Pomodoro' | 'ShortBreak' | 'LongBreak') => {
     setSelectedMode(mode);
     setIsRunning(false);
     setIsPaused(false);
@@ -130,7 +132,7 @@ const Timer: React.FC<TimerProps> = ({ onSelectMode, onStatusChange }) => {
     setIsRunning(false);
   };
 
-  const handleModeChange = (mode: "Pomodoro" | "ShortBreak" | "LongBreak") => {
+  const handleModeChange = (mode: 'Pomodoro' | 'ShortBreak' | 'LongBreak') => {
     setSelectedMode(mode);
     onSelectMode(mode);
     const { time, color, btnColor } = modeOptions[mode];
@@ -174,31 +176,43 @@ const Timer: React.FC<TimerProps> = ({ onSelectMode, onStatusChange }) => {
 
   return (
     <div className="box" style={{ backgroundColor: boxColor, transition: 'background-color 0.7s ease-in-out' }}>
-      <div className="topButtons">
-        <button className={`button ${selectedMode === "Pomodoro" ? "selected" : ""}`} onClick={() => selectMode("Pomodoro")}>Pomodoro</button>
-        <button className={`button ${selectedMode === "ShortBreak" ? "selected" : ""}`} onClick={() => selectMode("ShortBreak")}>Short Break</button>
-        <button className={`button ${selectedMode === "LongBreak" ? "selected" : ""}`} onClick={() => selectMode("LongBreak")}>Long Break</button>
-      </div>
-      <div className="buttomButtons">
+      <ModeButtonWrapper>
+        <ModeButton selected={selectedMode === 'Pomodoro'} onClick={() => selectMode('Pomodoro')}>
+          Pomodoro
+        </ModeButton>
+        <ModeButton selected={selectedMode === 'ShortBreak'} onClick={() => selectMode('ShortBreak')}>
+          Short Break
+        </ModeButton>
+        <ModeButton selected={selectedMode === 'LongBreak'} onClick={() => selectMode('LongBreak')}>
+          Long Break
+        </ModeButton>
+      </ModeButtonWrapper>
+      <ButtonContainer>
         <span>
-          <div className="countdown">
-            {minutes < 10 ? "0" : ""}
+          <Countdown>
+            {minutes < 10 ? '0' : ''}
             {minutes}:
-          </div>
-          <button className="start" onClick={isRunning ? pauseTimer : startTimer} style={{ color: btnColor, transition: 'background-color 0.7s ease-in-out' }}>
-            {isRunning ? "PAUSE" : "START"}
-          </button>
+          </Countdown>
+          <StartResetButton
+            onClick={isRunning ? pauseTimer : startTimer}
+            style={{ color: btnColor, transition: 'background-color 0.7s ease-in-out' }}
+          >
+            {isRunning ? 'PAUSE' : 'START'}
+          </StartResetButton>
         </span>
         <span>
-          <div className="countdown">
-            {seconds < 10 ? "0" : ""}
+          <Countdown>
+            {seconds < 10 ? '0' : ''}
             {seconds}
-          </div>
-          <button className="reset" onClick={resetTimer} style={{ color: btnColor, transition: 'background-color 0.7s ease-in-out' }}>
+          </Countdown>
+          <ResetButton
+            onClick={resetTimer}
+            style={{ color: btnColor, transition: 'background-color 0.7s ease-in-out' }}
+          >
             RESET
-          </button>
+          </ResetButton>
         </span>
-      </div>
+      </ButtonContainer>
     </div>
   );
 };
