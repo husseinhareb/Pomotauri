@@ -1,5 +1,7 @@
+// Settings.tsx
 import React, { useState, useEffect } from "react";
 import { core } from '@tauri-apps/api'; 
+import { SettingsWindow, CloseSettingsButton, TimerTitle, TimerSection, SectionTitle, InputRow, InputField, InputLabel, Input, SubmitButtonWrapper, SubmitButton, Hr, TimerForm } from './Styles/style';
 
 interface Timer {
   minutes: number;
@@ -66,117 +68,105 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="settings-window">
+    <SettingsWindow>
       <h3 className="settingsTitle">Settings</h3>
-      <button onClick={handleClose} className="closeSettings">
-        {/* Close button icon */}
-      </button>
-      <hr className="mainHr" />
-      <h3 className="timerTitle">
-        Timer
-      </h3>
-      <form onSubmit={handleSubmit}>
-        <div className="timer-section">
-          <h4 className="pomodoroTitle">Pomodoro</h4>
-          <div className="input-row">
-            <div className="input-field">
-              <label htmlFor="pomodoro-minutes">Minutes:</label>
-              <input
+      <CloseSettingsButton onClick={handleClose}>✕</CloseSettingsButton>
+      <Hr />
+      <TimerTitle>Timer</TimerTitle>
+      <TimerForm onSubmit={handleSubmit}>
+        <TimerSection>
+          <SectionTitle>Pomodoro</SectionTitle>
+          <InputRow>
+            <InputField>
+              <InputLabel htmlFor="pomodoro-minutes">Minutes:</InputLabel>
+              <Input
                 type="number"
                 id="pomodoro-minutes"
                 placeholder="25"
-                className="minutes"
                 value={pomodoroTime.minutes}
                 onChange={handleTimerChange(setPomodoroTime, "minutes")}
                 min={0}
                 max={60}
               />
-            </div>
-            <div className="input-field">
-              <label htmlFor="pomodoro-seconds">Seconds:</label>
-              <input
+            </InputField>
+            <InputField>
+              <InputLabel htmlFor="pomodoro-seconds">Seconds:</InputLabel>
+              <Input
                 type="number"
                 id="pomodoro-seconds"
                 placeholder="00"
-                className="seconds"
                 value={pomodoroTime.seconds}
                 onChange={handleTimerChange(setPomodoroTime, "seconds")}
                 min={0}
                 max={60}
               />
-            </div>
-          </div>
-        </div>
-        <div className="timer-section">
-          <h4 className="shortTitle">Short Break</h4>
-          <div className="input-row">
-            <div className="input-field">
-              <label htmlFor="shortbreak-minutes">Minutes:</label>
-              <input
+            </InputField>
+          </InputRow>
+        </TimerSection>
+        <TimerSection>
+          <SectionTitle>Short Break</SectionTitle>
+          <InputRow>
+            <InputField>
+              <InputLabel htmlFor="shortbreak-minutes">Minutes:</InputLabel>
+              <Input
                 type="number"
                 id="shortbreak-minutes"
                 placeholder="5"
-                className="minutes"
                 value={shortBreakTime.minutes}
                 onChange={handleTimerChange(setShortBreakTime, "minutes")}
                 min={0}
                 max={60}
               />
-            </div>
-            <div className="input-field">
-              <label htmlFor="shortbreak-seconds">Seconds:</label>
-              <input
+            </InputField>
+            <InputField>
+              <InputLabel htmlFor="shortbreak-seconds">Seconds:</InputLabel>
+              <Input
                 type="number"
                 id="shortbreak-seconds"
                 placeholder="00"
-                className="seconds"
                 value={shortBreakTime.seconds}
                 onChange={handleTimerChange(setShortBreakTime, "seconds")}
                 min={0}
                 max={60}
               />
-            </div>
-          </div>
-        </div>
-        <div className="timer-section">
-          <h4 className="longTitle">Long Break</h4>
-          <div className="input-row">
-            <div className="input-field">
-              <label htmlFor="longbreak-minutes">Minutes:</label>
-              <input
+            </InputField>
+          </InputRow>
+        </TimerSection>
+        <TimerSection>
+          <SectionTitle>Long Break</SectionTitle>
+          <InputRow>
+            <InputField>
+              <InputLabel htmlFor="longbreak-minutes">Minutes:</InputLabel>
+              <Input
                 type="number"
                 id="longbreak-minutes"
                 placeholder="15"
-                className="minutes"
                 value={longBreakTime.minutes}
                 onChange={handleTimerChange(setLongBreakTime, "minutes")}
                 min={0}
                 max={60}
               />
-            </div>
-            <div className="input-field">
-              <label htmlFor="longbreak-seconds">Seconds:</label>
-              <input
+            </InputField>
+            <InputField>
+              <InputLabel htmlFor="longbreak-seconds">Seconds:</InputLabel>
+              <Input
                 type="number"
                 id="longbreak-seconds"
                 placeholder="00"
-                className="seconds"
                 value={longBreakTime.seconds}
                 onChange={handleTimerChange(setLongBreakTime, "seconds")}
                 min={0}
                 max={60}
               />
-            </div>
-          </div>
-        </div>
-        <div className="submitDiv">
-          <button className="submitButton" type="submit">
-            OK
-          </button>
-        </div>
-        <hr className="Hr" />
-      </form>
-    </div>
+            </InputField>
+          </InputRow>
+        </TimerSection>
+        <SubmitButtonWrapper>
+          <SubmitButton type="submit">OK</SubmitButton>
+        </SubmitButtonWrapper>
+        <Hr />
+      </TimerForm>
+    </SettingsWindow>
   );
 };
 

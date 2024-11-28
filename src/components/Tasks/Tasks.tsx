@@ -1,5 +1,33 @@
 import React, { useState, useEffect, useRef, FormEvent } from "react";
-import { core } from '@tauri-apps/api';
+import { core } from "@tauri-apps/api";
+import {
+  TasksContainer,
+  TasksDiv,
+  TopTask,
+  TaskTitle,
+  TasksSettingsButton,
+  TaskHr,
+  TaskList,
+  AddTaskButton,
+  NewTask,
+  TaskInput,
+  TaskTimeInput,
+  TimeWrapper,
+  IncrementButton,
+  DecrementButton,
+  NewTaskBottom,
+  CancelButton,
+  AddButton,
+  TaskItem,
+  DeleteTaskButton,
+  NoTasksMessage,
+  TaskContentWrapper,
+  TimerWrapper,
+  TimeWorked,
+  EstTime,
+  TaskSettings,
+  ClearButton,
+} from "./Styles/style";
 
 interface Task {
   id: number;
@@ -76,21 +104,21 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
   // Fetch tasks from the backend
   const fetchTasks = async () => {
     try {
-      const response = await core.invoke('get_tasks');
+      const response = await core.invoke("get_tasks");
       if (Array.isArray(response)) {
         const uniqueTasks = response.filter((task, index, self) =>
           index === self.findIndex(t => t.id === task.id)
-        ).map(task => ({ ...task, completed: false, elapsed_time: 0 }));
+        ).map(task => ({ ...task, completed: false, worked_time: { minutes: 0, seconds: 0 } }));
         setTasks(uniqueTasks);
         if (uniqueTasks.length > 0) {
           setSelectedTaskId(uniqueTasks[0].id);
           setTime(uniqueTasks[0].worked_time);
         }
       } else {
-        console.error('Invalid response format:', response);
+        console.error("Invalid response format:", response);
       }
     } catch (error) {
-      console.error('Error while fetching tasks:', error);
+      console.error("Error while fetching tasks:", error);
     }
   };
 
@@ -116,7 +144,7 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
     const newTask: Task = {
       id: Date.now(),  // Using timestamp as task ID
       task: taskContent,
-      expected_time: parseInt(taskTime.toString(), 10),
+      expected_time: taskTime,
       worked_time: { minutes: 0, seconds: 0 },
       completed: false,
     };
@@ -128,14 +156,13 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
       setTaskContent("");
       setTaskTime(25);  // Reset to default time
     } catch (error) {
-      console.error('Error while sending data to backend:', error);
+      console.error("Error while sending data to backend:", error);
     }
   };
 
   // Handle task content change
   const handleTaskContent = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const trimmedValue = e.target.value.trimStart();
-    setTaskContent(trimmedValue);
+    setTaskContent(e.target.value);
   };
 
   // Handle task time change
@@ -149,35 +176,28 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
     try {
       await core.invoke("delete_task", { id: taskId });
     } catch (error) {
-      console.error('Error while deleting task:', error);
+      console.error("Error while deleting task:", error);
     }
   };
 
   // Handle task completion (checkbox change)
   const handleTaskCompletion = async (taskId: number, event: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = event.target?.checked;  // Safe check for 'checked'
-    const currentTime = time;
+    const isChecked = event.target.checked;
 
-    if (isChecked === undefined) return;
-
-    try {
-      if (isChecked) {
-        await core.invoke("delete_task", { id: taskId });
-        setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
-      } else {
-        const taskToUpdate = tasks.find(task => task.id === taskId);
-        if (taskToUpdate) {
-          taskToUpdate.worked_time = currentTime;
-          await core.invoke("set_task", { data: taskToUpdate });
-        }
+    if (isChecked) {
+      await core.invoke("delete_task", { id: taskId });
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+    } else {
+      const taskToUpdate = tasks.find(task => task.id === taskId);
+      if (taskToUpdate) {
+        taskToUpdate.worked_time = time;
+        await core.invoke("set_task", { data: taskToUpdate });
       }
-    } catch (error) {
-      console.error('Error while updating task:', error);
     }
 
     setTasks(tasks.map(task => {
       if (task.id === taskId) {
-        return { ...task, completed: !task.completed, worked_time: currentTime };
+        return { ...task, completed: !task.completed, worked_time: time };
       }
       return task;
     }));
@@ -187,20 +207,19 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
   const handleTaskClick = async (taskId: number) => {
     setSelectedTaskId(taskId);
     try {
-      const response = await core.invoke('get_tasks');
+      const response = await core.invoke("get_tasks");
       if (Array.isArray(response)) {
         const task = response.find(task => task.id === taskId);
         if (task) {
-          const workedTime = task ? task.worked_time : { minutes: 0, seconds: 0 };
-          setTime(workedTime);
+          setTime(task.worked_time);
         } else {
           console.log("Task with taskId not found in the response");
         }
       } else {
-        console.error('Invalid response format:', response);
+        console.error("Invalid response format:", response);
       }
     } catch (error) {
-      console.error('Error while fetching tasks:', error);
+      console.error("Error while fetching tasks:", error);
     }
   };
 
@@ -225,8 +244,7 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
       if (
         settingsRef.current &&
         event.target instanceof HTMLElement &&
-        !(settingsRef.current.contains(event.target)) &&
-        !(event.target.closest('.tasks-settings') instanceof HTMLElement)
+        !settingsRef.current.contains(event.target)
       ) {
         setShowSettings(false);
       }
@@ -241,15 +259,13 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
 
   // Clear completed tasks
   const clearCompletedTasks = () => {
-    const updatedTasks = tasks.filter(task => !task.completed);
-    setTasks(updatedTasks);
+    setTasks(tasks.filter(task => !task.completed));
     setShowSettings(false);
   };
 
   // Clear all tasks
   const clearAllTasks = async () => {
     setTasks([]);
-
     try {
       for (const task of tasks) {
         await core.invoke("delete_task", { id: task.id });
@@ -257,106 +273,68 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
       setSelectedTaskId(null);
       setTime({ minutes: 0, seconds: 0 });
     } catch (error) {
-      console.error('Error while clearing all tasks:', error);
+      console.error("Error while clearing all tasks:", error);
     }
     setShowSettings(false);
   };
 
   return (
-    <div className="tasks-container">
-      <div className="tasks-div">
-        <div className="top-task">
-          <p className="task-title">Tasks</p>
-          <button className="tasks-settings" onClick={toggleSettings}>
-            Settings
-          </button>
+    <TasksContainer>
+      <TasksDiv>
+        <TopTask>
+          <TaskTitle>Tasks</TaskTitle>
+          <TasksSettingsButton onClick={toggleSettings}>Settings</TasksSettingsButton>
           {showSettings && (
-            <div ref={settingsRef} className="task-settings">
-              <button type="button" className="tasks-done-clear" onClick={clearCompletedTasks}>Clear finished tasks</button>
-              <button type="button" className="tasks-clear" onClick={clearAllTasks}>Clear all tasks</button>
-            </div>
+            <TaskSettings ref={settingsRef}>
+              <ClearButton onClick={clearCompletedTasks}>Clear finished tasks</ClearButton>
+              <ClearButton onClick={clearAllTasks}>Clear all tasks</ClearButton>
+            </TaskSettings>
           )}
-        </div>
-        <hr className="task-hr" />
-        <div>
-          {tasks.length > 0 ? (
-            <div className="task-list">
-              {tasks.map(task => (
-                <div key={task.id} className={`task-item ${selectedTaskId === task.id ? 'selected-task' : ''}`} onClick={() => handleTaskClick(task.id)}>
-                  <div className="task-content-wrapper">
-                    <div className="task-content-left">
-                      <div className="checkbox-wrapper">
-                        <input
-                          type="checkbox"
-                          id={`task-done-${task.id}`}
-                          className="task-done"
-                          onChange={(event) => {
-                            event.stopPropagation();
-                            handleTaskCompletion(task.id, event);
-                          }}
-                          checked={task.completed}
-                        />
-                        <label htmlFor={`task-done-${task.id}`}></label>
-                      </div>
-                      <p className="task-content" style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
-                        {task.task}
-                      </p>
-                    </div>
-                    {selectedTaskId === task.id && (
-                      <div className="timers-div">
-                        <p className="time-worked">Time worked: {time.minutes.toString().padStart(2, '0')}:{time.seconds.toString().padStart(2, '0')}</p>
-                        <p className="est-time">Est. time: {task.expected_time}:00</p>
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <button className="delete-task" onClick={() => handleDeleteTask(task.id)}>Delete</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="no-tasks-sentence">No tasks available.</p>
-          )}
-        </div>
-        <div className="add-task">
-          {showInput && (
-            <form onSubmit={handleSubmit}>
-              <div className="new-task">
-                <input
-                  type="text"
-                  onChange={handleTaskContent}
-                  value={taskContent}
-                  placeholder="Enter your task"
-                  className="task-input"
-                />
-                <label className="task-time-label" htmlFor="task-time">Estimated Time (min):</label>
-                <div className="time-wrapper">
+        </TopTask>
+        <TaskHr />
+        {tasks.length > 0 ? (
+          <TaskList>
+            {tasks.map(task => (
+              <TaskItem key={task.id} selected={selectedTaskId === task.id}>
+                <TaskContentWrapper>
                   <input
-                    type="number"
-                    id="task-time"
-                    onChange={handleTaskTime}
-                    value={taskTime}
-                    min="1"
-                    max="59"
-                    className="task-time"
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={(e) => handleTaskCompletion(task.id, e)}
                   />
-                  <div className="time-buttons-div">
-                    <button type="button" className="increment-button" onClick={decrementTaskTime}>-</button>
-                    <button type="button" className="decrement-button" onClick={incrementTaskTime}>+</button>
-                  </div>
-                </div>
-                <div className="new-task-bottom">
-                  <button onClick={handleCancel} className="cancel-button">Cancel</button>
-                  <button type="submit" className="add-button">Add</button>
-                </div>
-              </div>
-            </form>
-          )}
-          <button className="add-task-btn" onClick={addTask}>Add Task</button>
-        </div>
-      </div>
-    </div>
+                  <span onClick={() => handleTaskClick(task.id)}>{task.task}</span>
+                </TaskContentWrapper>
+                {selectedTaskId === task.id && !task.completed && (
+                  <TimerWrapper>
+                    <TimeWorked>{`Time Worked: ${task.worked_time.minutes}:${task.worked_time.seconds.toString().padStart(2, "0")}`}</TimeWorked>
+                    <EstTime>{`Estimated Time: ${task.expected_time} min`}</EstTime>
+                  </TimerWrapper>
+                )}
+                <DeleteTaskButton onClick={() => handleDeleteTask(task.id)} />
+              </TaskItem>
+            ))}
+          </TaskList>
+        ) : (
+          <NoTasksMessage>No tasks to show.</NoTasksMessage>
+        )}
+        {showInput ? (
+          <NewTask>
+            <TaskInput value={taskContent} onChange={handleTaskContent} />
+            <TimeWrapper>
+              <DecrementButton onClick={decrementTaskTime}>-</DecrementButton>
+              <TaskTimeInput value={taskTime} onChange={handleTaskTime} />
+              <IncrementButton onClick={incrementTaskTime}>+</IncrementButton>
+            </TimeWrapper>
+            <NewTaskBottom>
+              <CancelButton onClick={handleCancel}>Cancel</CancelButton>
+              <AddButton onClick={handleSubmit}>Add</AddButton>
+            </NewTaskBottom>
+          </NewTask>
+        ) : (
+          <AddTaskButton onClick={addTask}>Add Task</AddTaskButton>
+        )}
+      </TasksDiv>
+    </TasksContainer>
   );
 };
 
