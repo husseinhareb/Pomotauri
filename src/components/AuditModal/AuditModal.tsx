@@ -3,11 +3,6 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { core } from "@tauri-apps/api";
 import {
-  ModalOverlay,
-  ModalContent,
-  CloseBtn,
-} from "../AuditModal/Styles/style";
-import {
   BarChart,
   Bar,
   XAxis,
@@ -17,6 +12,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { ModalOverlay, ModalContent, CloseBtn } from "./Styles/style";
 
 interface TimerDuration {
   minutes: number;
@@ -47,8 +43,6 @@ const AuditModal: React.FC<AuditModalProps> = ({ onClose }) => {
     async function fetchAudit() {
       const now = Math.floor(Date.now() / 1000);
       const weekAgo = now - 7 * 86400;
-
-      // call your Rust command
       const raw = await core.invoke<RawAuditEntry[]>(
         "get_audit_for_period",
         { since_epoch: weekAgo, until_epoch: now }
@@ -77,7 +71,7 @@ const AuditModal: React.FC<AuditModalProps> = ({ onClose }) => {
 
   return createPortal(
     <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+      <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseBtn onClick={onClose}>×</CloseBtn>
 
         <h2>Weekly Time Worked</h2>
@@ -99,10 +93,7 @@ const AuditModal: React.FC<AuditModalProps> = ({ onClose }) => {
             outerRadius={80}
           >
             {byTask.map((_, i) => (
-              <Cell
-                key={`slice-${i}`}
-                fill={["#8884d8", "#82ca9d", "#ffc658"][i % 3]}
-              />
+              <Cell key={i} fill={["#8884d8", "#82ca9d", "#ffc658"][i % 3]} />
             ))}
           </Pie>
           <Tooltip />
