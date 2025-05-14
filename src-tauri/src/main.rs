@@ -14,32 +14,45 @@ pub struct TimerSettings { pub pomodoro_time: TimerDuration, pub short_break_tim
 pub struct Task { pub id: String, pub task: String, pub expected_time: u32, pub worked_time: TimerDuration }
 
 fn initialize_database(app_handle: &AppHandle) -> Result<Connection, String> {
-  let app_dir = app_handle.path().app_data_dir().map_err(|e| e.to_string())?;
-  std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
-  let db_path = app_dir.join("data.db");
-  let conn = Connection::open(db_path).map_err(|e| e.to_string())?;
+    let app_dir = app_handle
+        .path()
+        .app_data_dir()
+        .map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
+    let db_path = app_dir.join("data.db");
+    let conn = Connection::open(db_path).map_err(|e| e.to_string())?;
 
-  conn.execute_batch(
-    "CREATE TABLE IF NOT EXISTS settings (
-       id INTEGER PRIMARY KEY,
-       pomodoro_minutes INTEGER,
-       pomodoro_seconds INTEGER,
-       short_break_minutes INTEGER,
-       short_break_seconds INTEGER,
-       long_break_minutes INTEGER,
-       long_break_seconds INTEGER
-     );
-     CREATE TABLE IF NOT EXISTS tasks (
-       id TEXT PRIMARY KEY,
-       task TEXT NOT NULL,
-       expected_time INTEGER NOT NULL,
-       worked_minutes INTEGER NOT NULL,
-       worked_seconds INTEGER NOT NULL
-     );",
-  ).map_err(|e| e.to_string())?;
+    conn.execute_batch(
+        r#"
+        CREATE TABLE IF NOT EXISTS settings (
+          id INTEGER PRIMARY KEY,
+          pomodoro_minutes INTEGER,
+          pomodoro_seconds INTEGER,
+          short_break_minutes INTEGER,
+          short_break_seconds INTEGER,
+          long_break_minutes INTEGER,
+          long_break_seconds INTEGER
+        );
+        CREATE TABLE IF NOT EXISTS tasks (
+          id TEXT PRIMARY KEY,
+          task TEXT NOT NULL,
+          expected_time INTEGER NOT NULL,
+          worked_minutes INTEGER NOT NULL,
+          worked_seconds INTEGER NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS audit (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          task_id TEXT NOT NULL,
+          worked_minutes INTEGER NOT NULL,
+          worked_seconds INTEGER NOT NULL,
+          timestamp INTEGER NOT NULL
+        );
+        "#,
+    ).map_err(|e| e.to_string())?;
 
-  Ok(conn)
+    Ok(conn)
 }
+
 
 #[tauri::command]
 fn set_config(app_handle: AppHandle, data: TimerSettings) -> Result<(), String> {

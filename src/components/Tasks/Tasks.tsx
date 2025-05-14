@@ -30,6 +30,7 @@ import {
   TaskSettings,
   ClearButton,
 } from "./Styles/style";
+import { FaTrash } from "react-icons/fa";
 
 interface Task {
   id: string;
@@ -222,7 +223,7 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
                     handleDelete(t.id);
                   }}
                 >
-                  🗑
+                  <FaTrash />
                 </DeleteTaskButton>
               </TaskItem>
             ))}

@@ -318,13 +318,15 @@ export const TimerWrapper = styled.div`
   flex-direction: column;
   align-items: flex-end;
   margin-right: 10px;
-  line-height: 2%;
   padding-left: 4px;
 `;
-
-export const TimeWorked = styled.p``;
+export const TimeWorked = styled.p`
+  font-size: 14px;
+  margin: 0 0 4px 0;
+`;
 
 export const EstTime = styled.p`
   font-size: 10px;
-  margin-right: 54px;
+  margin: 0 54px 0 0;
 `;
+
