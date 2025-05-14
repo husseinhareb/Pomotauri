@@ -1,4 +1,4 @@
-// Navbar.tsx
+// src/components/Navbar/Navbar.tsx
 import React, { useState } from "react";
 import Clock from "../Clock/Clock";
 import Settings from "../Settings/Settings";
@@ -9,27 +9,23 @@ import {
   LeftItems,
   RightItems,
   IconButton,
-  ClockText
+  ClockText,
 } from "./Styles/style";
 import { FaApple } from "react-icons/fa";
 import { FiBarChart2, FiHome } from "react-icons/fi";
 import { IoIosSettings } from "react-icons/io";
+
 const Navbar: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showAudit, setShowAudit] = useState(false);
 
-  const toggleSettings = (): void => {
-    setShowSettings(prev => !prev);
-  };
-
-  const handleCloseSettings = (): void => {
-    setShowSettings(false);
-  };
-
   return (
     <NavbarContainer>
       <LeftItems>
-        <IconButton onClick={() => window.location.reload()} title="Pomotauri">
+        <IconButton
+          onClick={() => window.location.reload()}
+          title="Pomotauri"
+        >
           <FaApple className="appleIco" />
           Pomotauri
         </IconButton>
@@ -52,13 +48,18 @@ const Navbar: React.FC = () => {
           </li>
           <li>
             <IconButton onClick={() => setShowAudit(true)}>
-              <FiBarChart2 /> History
+              <FiBarChart2 />
+              History
             </IconButton>
-            {showAudit && <AuditModal onClose={() => setShowAudit(false)} />}
-
+            {showAudit && (
+              <AuditModal onClose={() => setShowAudit(false)} />
+            )}
           </li>
           <li>
-            <IconButton onClick={toggleSettings} className="settingsButton">
+            <IconButton
+              onClick={() => setShowSettings((s) => !s)}
+              className="settingsButton"
+            >
               <IoIosSettings className="settingsIco" />
               Settings
             </IconButton>
@@ -66,7 +67,7 @@ const Navbar: React.FC = () => {
         </List>
       </RightItems>
 
-      {showSettings && <Settings onClose={handleCloseSettings} />}
+      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
     </NavbarContainer>
   );
 };

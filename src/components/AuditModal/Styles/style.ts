@@ -1,26 +1,32 @@
-// src/components/AuditModal/AuditModal.styles.ts
+// src/components/AuditModal/Styles/style.ts
 import styled from "styled-components";
 
 export const ModalOverlay = styled.div`
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex; justify-content: center; align-items: center;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1000;
 `;
 
 export const ModalContent = styled.div`
   background: #fff;
-  padding: 24px;
   border-radius: 8px;
-  max-width: 95%;
-  max-height: 95%;
-  overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 1.5rem;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
   position: relative;
 `;
 
 export const CloseBtn = styled.button`
-  position: absolute; top: 12px; right: 12px;
-  background: transparent; border: none; font-size: 24px;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
   cursor: pointer;
 `;

@@ -187,7 +187,7 @@ async fn get_audit_for_period(
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![ set_config, get_config, set_task, get_tasks, delete_task ])
+    .invoke_handler(tauri::generate_handler![ set_config, get_config, set_task, get_tasks, delete_task,get_audit_for_period ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

@@ -1,4 +1,4 @@
-// Styles/style.ts
+// Navbar/Styles/style.ts
 import styled from "styled-components";
 
 export const NavbarContainer = styled.nav`
