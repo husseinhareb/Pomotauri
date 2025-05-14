@@ -9,6 +9,7 @@ import {
   TasksSettingsButton,
   TaskHr,
   TaskList,
+  AddTaskWrapper,
   AddTaskButton,
   NewTask,
   TaskInput,
@@ -52,59 +53,47 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
   const [showSettings, setShowSettings] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
 
-  // Fetch tasks on mount
   useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  // Timer effect: update worked_time in DB
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    const updateLoop = async () => {
-      if (!timerStatus || !selectedTaskId) return;
-      const selected = tasks.find(t => t.id === selectedTaskId);
-      if (!selected || selected.completed) return;
-
-      intervalId = setInterval(() => {
-        setTime(prev => {
-          let secs = prev.seconds + 1;
-          let mins = prev.minutes;
-          if (secs === 60) { secs = 0; mins += 1; }
-          if (mins === 60) { secs = 0; mins = 0; }
-          const updated = { minutes: mins, seconds: secs };
-          core.invoke("set_task", { data: { ...selected, worked_time: updated } });
-          return updated;
-        });
-      }, 1000);
-    };
-    updateLoop();
-    return () => clearInterval(intervalId);
-  }, [timerStatus, selectedTaskId, tasks]);
-
-  const fetchTasks = async () => {
-    try {
-      const response = await core.invoke<Task[]>("get_tasks");
-      if (Array.isArray(response)) {
-        const unique = response.map(t => ({ ...t, completed: false }));
-        setTasks(unique);
-        if (unique.length) {
-          setSelectedTaskId(unique[0].id);
-          setTime(unique[0].worked_time);
+    (async () => {
+      const resp = await core.invoke<Task[]>("get_tasks");
+      if (Array.isArray(resp)) {
+        const uniq = resp.map(t => ({ ...t, completed: false }));
+        setTasks(uniq);
+        if (uniq.length) {
+          setSelectedTaskId(uniq[0].id);
+          setTime(uniq[0].worked_time);
         }
       }
-    } catch (e) {
-      console.error(e);
+    })();
+  }, []);
+
+  useEffect(() => {
+    let id: NodeJS.Timeout;
+    if (timerStatus && selectedTaskId) {
+      const sel = tasks.find(t => t.id === selectedTaskId);
+      if (sel && !sel.completed) {
+        id = setInterval(() => {
+          setTime(prev => {
+            let secs = prev.seconds + 1;
+            let mins = prev.minutes;
+            if (secs === 60) { secs = 0; mins++; }
+            if (mins === 60) { mins = 0; }
+            const updated = { minutes: mins, seconds: secs };
+            core.invoke("set_task", { data: { ...sel, worked_time: updated } });
+            return updated;
+          });
+        }, 1000);
+      }
     }
-  };
+    return () => clearInterval(id);
+  }, [timerStatus, selectedTaskId, tasks]);
 
   const addTask = () => setShowInput(true);
   const handleCancel = () => setShowInput(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!taskContent.trim()) {
-      return alert("Enter a task.");
-    }
+    if (!taskContent.trim()) return alert("Enter a task.");
     const newTask: Task = {
       id: Date.now().toString(),
       task: taskContent,
@@ -126,7 +115,7 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
 
   const handleCompletion = async (id: string, checked: boolean) => {
     if (checked) {
-      handleDelete(id);
+      await core.invoke("delete_task", { id });
     } else {
       const task = tasks.find(t => t.id === id);
       if (task) {
@@ -134,9 +123,13 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
         await core.invoke("set_task", { data: task });
       }
     }
-    setTasks(prev => prev.map(t =>
-      t.id === id ? { ...t, completed: !t.completed, worked_time: time } : t
-    ));
+    setTasks(prev =>
+      prev.map(t =>
+        t.id === id
+          ? { ...t, completed: !t.completed, worked_time: time }
+          : t
+      )
+    );
   };
 
   const handleClick = async (id: string) => {
@@ -151,19 +144,28 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
   const toggleSettings = () => setShowSettings(s => !s);
 
   useEffect(() => {
-    const onClick = (e: MouseEvent) => {
+    const listener = (e: MouseEvent) => {
       if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
         setShowSettings(false);
       }
     };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    document.addEventListener("mousedown", listener);
+    return () => document.removeEventListener("mousedown", listener);
   }, []);
 
-  const clearFinished = () => { setTasks(ts => ts.filter(t => !t.completed)); setShowSettings(false); };
+  const clearFinished = () => {
+    setTasks(ts => ts.filter(t => !t.completed));
+    setShowSettings(false);
+  };
+
   const clearAll = async () => {
-    for (const t of tasks) await core.invoke("delete_task", { id: t.id });
-    setTasks([]); setSelectedTaskId(null); setTime({ minutes: 0, seconds: 0 }); setShowSettings(false);
+    for (const t of tasks) {
+      await core.invoke("delete_task", { id: t.id });
+    }
+    setTasks([]);
+    setSelectedTaskId(null);
+    setTime({ minutes: 0, seconds: 0 });
+    setShowSettings(false);
   };
 
   return (
@@ -171,26 +173,33 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
       <TasksDiv>
         <TopTask>
           <TaskTitle>Tasks</TaskTitle>
-          <TasksSettingsButton onClick={toggleSettings}>&#x22EE;</TasksSettingsButton>
+          <TasksSettingsButton onClick={toggleSettings}>⋮</TasksSettingsButton>
           {showSettings && (
             <TaskSettings ref={settingsRef}>
-              <ClearButton onClick={clearFinished}>&#x2713; Clear finished tasks</ClearButton>
-              <ClearButton onClick={clearAll}>&#x1F5D1; Clear all tasks</ClearButton>
+              <ClearButton onClick={clearFinished}>✓ Clear finished tasks</ClearButton>
+              <ClearButton onClick={clearAll}>🗑 Clear all tasks</ClearButton>
             </TaskSettings>
           )}
         </TopTask>
 
         <TaskHr />
 
-        {tasks.length ? (
+        {tasks.length > 0 ? (
           <TaskList>
             {tasks.map(t => (
-              <TaskItem key={t.id} selected={t.id === selectedTaskId} onClick={() => handleClick(t.id)}>
+              <TaskItem
+                key={t.id}
+                selected={t.id === selectedTaskId}
+                onClick={() => handleClick(t.id)}
+              >
                 <TaskContentWrapper>
                   <input
                     type="checkbox"
                     checked={t.completed}
-                    onChange={e => { e.stopPropagation(); handleCompletion(t.id, e.target.checked); }}
+                    onChange={e => {
+                      e.stopPropagation();
+                      handleCompletion(t.id, e.target.checked);
+                    }}
                   />
                   <span style={{ textDecoration: t.completed ? "line-through" : "none" }}>
                     {t.task}
@@ -207,7 +216,14 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
                   </TimerWrapper>
                 )}
 
-                <DeleteTaskButton onClick={e => { e.stopPropagation(); handleDelete(t.id); }}>&#x1F5D1;</DeleteTaskButton>
+                <DeleteTaskButton
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleDelete(t.id);
+                  }}
+                >
+                  🗑
+                </DeleteTaskButton>
               </TaskItem>
             ))}
           </TaskList>
@@ -216,13 +232,14 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
         )}
 
         {showInput ? (
-          <NewTask as="form" onSubmit={handleSubmit}>
+          <NewTask onSubmit={handleSubmit}>
             <TaskInput
               type="text"
               placeholder="Enter your task"
               value={taskContent}
               onChange={e => setTaskContent(e.target.value)}
             />
+
             <TimeWrapper>
               <TaskTimeInput
                 type="number"
@@ -231,16 +248,19 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
                 value={taskTime}
                 onChange={e => setTaskTime(Number(e.target.value))}
               />
-              <IncrementButton type="button" onClick={decTime}>&#x2212;</IncrementButton>
-              <DecrementButton type="button" onClick={incTime}>&#x2b;</DecrementButton>
+              <DecrementButton onClick={decTime}>–</DecrementButton>
+              <IncrementButton onClick={incTime}>+</IncrementButton>
             </TimeWrapper>
+
             <NewTaskBottom>
-              <CancelButton type="button" onClick={handleCancel}>Cancel</CancelButton>
+              <CancelButton onClick={handleCancel}>Cancel</CancelButton>
               <AddButton type="submit">Add</AddButton>
             </NewTaskBottom>
           </NewTask>
         ) : (
-          <AddTaskButton type="button" onClick={addTask}>+ Add Task</AddTaskButton>
+          <AddTaskWrapper>
+            <AddTaskButton onClick={addTask}>+ Add Task</AddTaskButton>
+          </AddTaskWrapper>
         )}
       </TasksDiv>
     </TasksContainer>
