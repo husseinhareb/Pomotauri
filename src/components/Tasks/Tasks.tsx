@@ -1,3 +1,4 @@
+// Tasks.tsx
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { core } from "@tauri-apps/api";
 import {
@@ -64,15 +65,14 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
       const selected = tasks.find(t => t.id === selectedTaskId);
       if (!selected || selected.completed) return;
 
-      intervalId = setInterval(async () => {
+      intervalId = setInterval(() => {
         setTime(prev => {
           let secs = prev.seconds + 1;
           let mins = prev.minutes;
           if (secs === 60) { secs = 0; mins += 1; }
           if (mins === 60) { secs = 0; mins = 0; }
           const updated = { minutes: mins, seconds: secs };
-          const updatedTask = { ...selected, worked_time: updated };
-          core.invoke("set_task", { data: updatedTask });
+          core.invoke("set_task", { data: { ...selected, worked_time: updated } });
           return updated;
         });
       }, 1000);
@@ -134,7 +134,9 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
         await core.invoke("set_task", { data: task });
       }
     }
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed, worked_time: time } : t));
+    setTasks(prev => prev.map(t =>
+      t.id === id ? { ...t, completed: !t.completed, worked_time: time } : t
+    ));
   };
 
   const handleClick = async (id: string) => {
@@ -169,59 +171,80 @@ const Tasks: React.FC<TasksProps> = ({ timerStatus }) => {
       <TasksDiv>
         <TopTask>
           <TaskTitle>Tasks</TaskTitle>
-          <TasksSettingsButton onClick={toggleSettings}>Settings</TasksSettingsButton>
+          <TasksSettingsButton onClick={toggleSettings}>&#x22EE;</TasksSettingsButton>
           {showSettings && (
             <TaskSettings ref={settingsRef}>
-              <ClearButton onClick={clearFinished}>Clear finished</ClearButton>
-              <ClearButton onClick={clearAll}>Clear all</ClearButton>
+              <ClearButton onClick={clearFinished}>&#x2713; Clear finished tasks</ClearButton>
+              <ClearButton onClick={clearAll}>&#x1F5D1; Clear all tasks</ClearButton>
             </TaskSettings>
           )}
         </TopTask>
+
         <TaskHr />
+
         {tasks.length ? (
           <TaskList>
             {tasks.map(t => (
-              <TaskItem key={t.id} selected={t.id === selectedTaskId}>
+              <TaskItem key={t.id} selected={t.id === selectedTaskId} onClick={() => handleClick(t.id)}>
                 <TaskContentWrapper>
                   <input
                     type="checkbox"
                     checked={t.completed}
-                    onChange={e => handleCompletion(t.id, e.target.checked)}
+                    onChange={e => { e.stopPropagation(); handleCompletion(t.id, e.target.checked); }}
                   />
-                  <span onClick={() => handleClick(t.id)}>{t.task}</span>
+                  <span style={{ textDecoration: t.completed ? "line-through" : "none" }}>
+                    {t.task}
+                  </span>
                 </TaskContentWrapper>
-                {t.id === selectedTaskId && !t.completed && (
+
+                {t.id === selectedTaskId && (
                   <TimerWrapper>
-                    <TimeWorked>{`Worked: ${t.worked_time.minutes}:${t.worked_time.seconds.toString().padStart(2, '0')}`}</TimeWorked>
-                    <EstTime>{`Est: ${t.expected_time}m`}</EstTime>
+                    <TimeWorked>
+                      Time worked: {time.minutes.toString().padStart(2, "0")}:
+                      {time.seconds.toString().padStart(2, "0")}
+                    </TimeWorked>
+                    <EstTime>Est. time: {t.expected_time}:00</EstTime>
                   </TimerWrapper>
                 )}
-                <DeleteTaskButton onClick={() => handleDelete(t.id)} />
+
+                <DeleteTaskButton onClick={e => { e.stopPropagation(); handleDelete(t.id); }}>&#x1F5D1;</DeleteTaskButton>
               </TaskItem>
             ))}
           </TaskList>
         ) : (
-          <NoTasksMessage>No tasks.</NoTasksMessage>
+          <NoTasksMessage>No tasks available.</NoTasksMessage>
         )}
+
         {showInput ? (
-          <NewTask>
-            <TaskInput value={taskContent} onChange={e => setTaskContent(e.target.value)} />
+          <NewTask as="form" onSubmit={handleSubmit}>
+            <TaskInput
+              type="text"
+              placeholder="Enter your task"
+              value={taskContent}
+              onChange={e => setTaskContent(e.target.value)}
+            />
             <TimeWrapper>
-              <DecrementButton onClick={decTime}>-</DecrementButton>
-              <TaskTimeInput value={taskTime} onChange={e => setTaskTime(Number(e.target.value))} />
-              <IncrementButton onClick={incTime}>+</IncrementButton>
+              <TaskTimeInput
+                type="number"
+                min={1}
+                max={59}
+                value={taskTime}
+                onChange={e => setTaskTime(Number(e.target.value))}
+              />
+              <IncrementButton type="button" onClick={decTime}>&#x2212;</IncrementButton>
+              <DecrementButton type="button" onClick={incTime}>&#x2b;</DecrementButton>
             </TimeWrapper>
             <NewTaskBottom>
-              <CancelButton onClick={handleCancel}>Cancel</CancelButton>
-              <AddButton onClick={handleSubmit}>Add</AddButton>
+              <CancelButton type="button" onClick={handleCancel}>Cancel</CancelButton>
+              <AddButton type="submit">Add</AddButton>
             </NewTaskBottom>
           </NewTask>
         ) : (
-          <AddTaskButton onClick={addTask}>Add Task</AddTaskButton>
+          <AddTaskButton type="button" onClick={addTask}>+ Add Task</AddTaskButton>
         )}
       </TasksDiv>
     </TasksContainer>
-);
-}
+  );
+};
 
 export default Tasks;

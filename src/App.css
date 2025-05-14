@@ -1,12 +1,21 @@
 /*App.css*/
+@font-face {
+  font-family: 'Arial Rounded';
+  src: url('./assets/fonts/ttf/Arial-Rounded.ttf') format('truetype');
+}
+
 *{
     margin: 0;
     padding: 0;
     font-style: normal;
     box-sizing: border-box;
+    font-family: 'Arial Rounded', sans-serif;
+
 }
 
 #root,html,body,.app{
     height: 100%;
     width: 100%;
 }
+
+

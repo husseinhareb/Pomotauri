@@ -2,18 +2,22 @@
 import React, { useState } from "react";
 import Clock from "../Clock/Clock";
 import Settings from "../Settings/Settings";
-import { NavbarContainer, List, LeftItems, RightItems, Button, ClockText } from "./Styles/style";
-
-// Define the Props interface for the Settings component (if needed)
-interface NavbarProps {
-  // Add any props you might need for the Navbar component
-}
-
-const Navbar: React.FC<NavbarProps> = () => {
-  const [showSettings, setShowSettings] = useState<boolean>(false);
+import { 
+  NavbarContainer, 
+  List, 
+  LeftItems, 
+  RightItems, 
+  IconButton, 
+  ClockText 
+} from "./Styles/style";
+import { FaApple } from "react-icons/fa";
+import { FiHome } from "react-icons/fi";
+import { IoIosSettings } from "react-icons/io";
+const Navbar: React.FC = () => {
+  const [showSettings, setShowSettings] = useState(false);
 
   const toggleSettings = (): void => {
-    setShowSettings((prev) => !prev);
+    setShowSettings(prev => !prev);
   };
 
   const handleCloseSettings = (): void => {
@@ -23,9 +27,10 @@ const Navbar: React.FC<NavbarProps> = () => {
   return (
     <NavbarContainer>
       <LeftItems>
-        <Button onClick={() => window.location.reload()} className="title">
+        <IconButton onClick={() => window.location.reload()} title="Pomotauri">
+          <FaApple className="appleIco" />
           Pomotauri
-        </Button>
+        </IconButton>
         <List>
           <li>
             <ClockText>
@@ -38,12 +43,16 @@ const Navbar: React.FC<NavbarProps> = () => {
       <RightItems>
         <List>
           <li>
-            <Button className="homeButton">Home</Button>
+            <IconButton className="homeButton">
+              <FiHome className="homeIco" />
+              Home
+            </IconButton>
           </li>
           <li>
-            <Button onClick={toggleSettings} className="settingsButton">
+            <IconButton onClick={toggleSettings} className="settingsButton">
+              <IoIosSettings className="settingsIco" />
               Settings
-            </Button>
+            </IconButton>
           </li>
         </List>
       </RightItems>

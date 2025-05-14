@@ -1,6 +1,17 @@
 // Pomodoro.styled.ts
 import styled from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 
+export const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: 'Arial-Rounded-Bold';
+    src: url('../assets/fonts/ttf/Arial-RoundedBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+  }
+
+`;
 // Container for the Pomodoro timer box
 export const PomodoroBox = styled.div`
   background-color: #c15c5c;
@@ -19,10 +30,9 @@ export const Countdown = styled.div`
   font-size: 120px;
   color: white;
   font-weight: bold;
-  font-family: 'Arial-Rounded-Bold';
+  font-family: 'Arial-Rounded-Bold', Arial, sans-serif;
   letter-spacing: 14px;
 `;
-
 // Container for buttons at the bottom
 export const ButtonContainer = styled.div`
   display: flex;
