@@ -60,7 +60,8 @@ const AuditModal: React.FC<AuditModalProps> = ({ onClose }) => {
           "get_audit_for_period",
           { since_epoch: weekAgo, until_epoch: now }
         );
-
+        console.log(raw);
+        
         const dailyMap: Record<string, number> = {};
         const taskMap: Record<string, number> = {};
 
