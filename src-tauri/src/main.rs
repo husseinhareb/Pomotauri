@@ -35,10 +35,12 @@ fn initialize_database(app_handle: &AppHandle) -> Result<Connection, String> {
     let db_path = app_dir.join("data.db");
     let conn = Connection::open(db_path).map_err(|e| e.to_string())?;
 
+    // Enable foreign keys
+    conn.pragma_update(None, "foreign_keys", &"ON").map_err(|e| e.to_string())?;
+
+    // Ensure settings and tasks tables exist
     conn.execute_batch(
         r#"
-        PRAGMA foreign_keys = ON;
-
         CREATE TABLE IF NOT EXISTS settings (
           id INTEGER PRIMARY KEY,
           pomodoro_minutes INTEGER,
@@ -65,15 +67,14 @@ fn initialize_database(app_handle: &AppHandle) -> Result<Connection, String> {
           timestamp INTEGER NOT NULL,
           FOREIGN KEY(task_id) REFERENCES tasks(id) ON DELETE CASCADE
         );
-
         CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit(timestamp);
         CREATE INDEX IF NOT EXISTS idx_audit_task ON audit(task_id);
-        "#,
-    )
-    .map_err(|e| e.to_string())?;
+        "#
+    ).map_err(|e| e.to_string())?;
 
     Ok(conn)
 }
+
 
 #[tauri::command]
 fn set_config(app_handle: AppHandle, data: TimerSettings) -> Result<(), String> {
