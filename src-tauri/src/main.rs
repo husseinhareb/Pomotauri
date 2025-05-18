@@ -27,28 +27,31 @@ pub struct Task {
 }
 
 fn initialize_database(app_handle: &AppHandle) -> Result<Connection, String> {
+    // Determine and create app data directory
     let app_dir = app_handle
         .path()
         .app_data_dir()
         .map_err(|e| e.to_string())?;
     std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
     let db_path = app_dir.join("data.db");
+
+    // Open or create the database
     let conn = Connection::open(db_path).map_err(|e| e.to_string())?;
 
-    // Enable foreign keys
+    // Enable foreign key enforcement
     conn.pragma_update(None, "foreign_keys", &"ON").map_err(|e| e.to_string())?;
 
-    // Ensure settings and tasks tables exist
+    // Create tables if they don't exist
     conn.execute_batch(
         r#"
         CREATE TABLE IF NOT EXISTS settings (
           id INTEGER PRIMARY KEY,
-          pomodoro_minutes INTEGER,
-          pomodoro_seconds INTEGER,
-          short_break_minutes INTEGER,
-          short_break_seconds INTEGER,
-          long_break_minutes INTEGER,
-          long_break_seconds INTEGER
+          pomodoro_minutes INTEGER NOT NULL DEFAULT 25,
+          pomodoro_seconds INTEGER NOT NULL DEFAULT 0,
+          short_break_minutes INTEGER NOT NULL DEFAULT 5,
+          short_break_seconds INTEGER NOT NULL DEFAULT 0,
+          long_break_minutes INTEGER NOT NULL DEFAULT 15,
+          long_break_seconds INTEGER NOT NULL DEFAULT 0
         );
 
         CREATE TABLE IF NOT EXISTS tasks (
@@ -72,13 +75,47 @@ fn initialize_database(app_handle: &AppHandle) -> Result<Connection, String> {
         "#
     ).map_err(|e| e.to_string())?;
 
+    // Migration: ensure all expected columns exist in settings
+    let existing_cols: Vec<String> = {
+        let mut stmt = conn.prepare("PRAGMA table_info(settings)")
+            .map_err(|e| e.to_string())?;
+        let cols = stmt
+            .query_map([], |row| row.get(1))
+            .map_err(|e| e.to_string())?
+            .collect::<Result<_, _>>()
+            .map_err(|e| e.to_string())?;
+        // stmt dropped here
+        cols
+    };
+
+    // Define expected columns with types and defaults
+    let migrations = vec![
+        ("pomodoro_minutes", "INTEGER", "25"),
+        ("pomodoro_seconds", "INTEGER", "0"),
+        ("short_break_minutes", "INTEGER", "5"),
+        ("short_break_seconds", "INTEGER", "0"),
+        ("long_break_minutes", "INTEGER", "15"),
+        ("long_break_seconds", "INTEGER", "0"),
+    ];
+
+    for (col, col_type, default) in migrations {
+        if !existing_cols.contains(&col.to_string()) {
+            let sql = format!(
+                "ALTER TABLE settings ADD COLUMN {} {} NOT NULL DEFAULT {}",
+                col, col_type, default
+            );
+            conn.execute(&sql, [])
+                .map_err(|e| e.to_string())?;
+        }
+    }
+
     Ok(conn)
 }
-
 
 #[tauri::command]
 fn set_config(app_handle: AppHandle, data: TimerSettings) -> Result<(), String> {
     let conn = initialize_database(&app_handle)?;
+    
     conn.execute(
         "INSERT OR REPLACE INTO settings \
          (id, pomodoro_minutes, pomodoro_seconds, short_break_minutes, short_break_seconds, long_break_minutes, long_break_seconds)\

@@ -11,9 +11,9 @@ import {
   IconButton,
   ClockText,
 } from "./Styles/style";
-import { FaApple } from "react-icons/fa";
-import { FiBarChart2, FiHome } from "react-icons/fi";
+import { FaApple, FaHome } from "react-icons/fa";
 import { IoIosSettings } from "react-icons/io";
+import { IoBarChartSharp } from "react-icons/io5";
 
 const Navbar: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
@@ -42,13 +42,13 @@ const Navbar: React.FC = () => {
         <List>
           <li>
             <IconButton className="homeButton">
-              <FiHome className="homeIco" />
+              <FaHome className="homeIco" />
               Home
             </IconButton>
           </li>
           <li>
             <IconButton onClick={() => setShowAudit(true)}>
-              <FiBarChart2 />
+              <IoBarChartSharp />
               History
             </IconButton>
             {showAudit && (
